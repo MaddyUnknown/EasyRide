@@ -67,19 +67,22 @@
                 <section class="section--filters">
                     <div class="header--filter">
                         <p>Filter</p>
-                        <p class="btn-filter-reset">(Reset)</p>
+                        <p class="btn--filter-reset">(Reset)</p>
                     </div>
                     <div class="filter-section">
                         <p class="filter-heading">Bus type</p>
                         <ul class="filter-check-list">
                             <li class="filter-check-item">
-                                Seater
+                                <input type="checkbox" id="filter--bus-type-seater"/>
+                                <label for="filter--bus-type-seater">Seater</label>
                             </li>
                             <li class="filter-check-item">
-                                Sleaper
+                                <input type="checkbox" id="filter--bus-type-sleaper"/>
+                                <label for="filter--bus-type-sleaper">Sleaper</label>
                             </li>
                             <li class="filter-check-item">
-                                AC
+                                <input type="checkbox" id="filter--bus-type-ac"/>
+                                <label for="filter--bus-type-ac">AC</label>
                             </li>
                         </ul>
                     </div>
@@ -87,16 +90,21 @@
                         <p class="filter-heading">Departure time</p>
                         <ul class="filter-check-list">
                             <li class="filter-check-item">
-                                Before 6am
+                                <input type="checkbox" id="filter--depart-before-6am"/>
+                                <label for="filter--depart-before-6am">Before 6am</label>
                             </li>
                             <li class="filter-check-item">
-                                6am to 12am
+                                <input type="checkbox" id="filter--depart-6am-to-12am"/>
+                                <label for="filter--depart-6am-to-12am">6am to 12am</label>
                             </li>
                             <li class="filter-check-item">
-                                12pm to 6pm
+                                <input type="checkbox" id="filter--depart-12pm-to-6pm"/>
+                                <label for="filter--depart-12pm-to-6pm">12pm to 6pm</label>
                             </li>
                             <li class="filter-check-item">
-                                After 6pm
+                                <input type="checkbox" id="filter--depart-after-6pm"/>
+                                <label for="filter--depart-after-6pm">After 6pm</label>
+                                
                             </li>
                         </ul>
                     </div>
@@ -104,74 +112,39 @@
                         <p class="filter-heading">Arival time</p>
                         <ul class="filter-check-list">
                             <li class="filter-check-item">
-                                Before 6am
+                                <input type="checkbox" id="filter--arrival-before-6am"/>
+                                <label for="filter--arrival-before-6am">Before 6am</label>
                             </li>
                             <li class="filter-check-item">
-                                6am to 12am
+                                <input type="checkbox" id="filter--arrival-6am-to-12am"/>
+                                <label for="filter--arrival-6am-to-12am">6am to 12am</label>
                             </li>
                             <li class="filter-check-item">
-                                12pm to 6pm
+                                <input type="checkbox" id="filter--arrival-12pm-to-6pm"/>
+                                <label for="filter--arrival-12pm-to-6pm">12pm to 6pm</label>
                             </li>
                             <li class="filter-check-item">
-                                After 6pm
+                                <input type="checkbox" id="filter--arrival-after-6pm"/>
+                                <label for="filter--arrival-after-6pm">After 6pm</label>
+                                
                             </li>
                         </ul>
                     </div>
                 </section>
                 <section class="section--search-result">
                     <ul class="search-result-list">
-                        <li class="search-result-item">
-                            <div class="container--bus-general-details">
-                                <p class="bus-name">Greenline</p>
-                                <p class="bus-seat-config-name">Volvo 9600 A/C Seater/Sleeper (2+1)</p>
-                                <div class="container--bus-rating-review">
-                                    <div class="container--bus-rating">
-                                        <ion-icon name="star"></ion-icon>
-                                        <p class="bus-rating">4.6</p>
-                                    </div>
-                                    <div class="container--bus-reviews">
-                                        <ion-icon class="bus-rating-icon" name="people-outline"></ion-icon>
-                                        <p class="bus-reviews">450</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="container--bus-time-details">
-                                <p class="trip-duration">09h 45m</p>
-                                <p class="container--boarding-time">
-                                    <span class="container--location-icon">
-                                        <ion-icon class="location-icon" name="ellipse-outline"></ion-icon>
-                                    </span>
-                                    <span class="boarding-time">22:30</span>
-                                </p>
-                                <p class="container--dropping-time">
-                                    <span class="container--location-icon">
-                                        <ion-icon class="location-icon" name="ellipse-outline"></ion-icon>
-                                    </span>
-                                    <span class="dropping-time">08:25</span>
-                                    <span class="dropping-days">+9</span>
-                                </p>
-                                <p class="boarding-location">Kolkata</p>
-                                <p class="dropping-location">Tenzing Norgay Bus Terminus</p>
-                            </div>
-                            <div class="container--bus-seat-cost">
-                                <p>Starts from</p>
-                                <p><span class="seat-cost-currency">INR</span> <span class="bus-seat-cost">1200</span></p>
-                            </div>
-                            <div class="container--bus-seat-available">
-                                <span class="bus-seat-available">12</span> seats available
-                            </div>
-                            <div>
-                                <button class="btn--view-seats">
-                                    View Seats
-                                </button>
-                            </div>
-                        </li>
+                        
                     </ul>
                 </section>
             </div>
         </main>
+        <footer>
+            Copyright &copy;
+        </footer>
 
         <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
         <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    
+        <script src="../js/search.js" />
     </body>
 </html>
