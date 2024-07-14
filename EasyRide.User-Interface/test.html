@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>EasyRide</title>
+
+        <!-- GOOGLE FONT -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+
+        <!-- COMMON SITE STYLESHEET -->
+        <link rel="stylesheet" href="../css/common.css" />
+    </head>
+    <body>
+        <!-- COMMON HEADER -->
+        <header class="section--header">
+            <div class="container container--header">
+                <img class="logo" src="../img/logo.png" alt="Website Logo" />
+                <nav class="nav nav--header">
+                    <ul>
+                        <li>
+                            <a class="btn btn--link" href="#" route-link="/search">Search</a>
+                        </li>
+                        <li>
+                            <a class="btn btn--link" href="#">Not used</a>
+                        </li>
+                        <li>
+                            <a class="btn btn--link container--user-profile" href="#">
+                                <img class="user-profile-pic" src="../img/profile-pic.jpg" alt="User profile pic" />
+                                <ion-icon name="chevron-down-outline"></ion-icon>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <!-- ROUTER ROOT TAG -->
+        <app-container>
+            <main>
+                <section class="section--search-bar">
+                    <div class="container container--search-bar">
+                        <form class="form--search-bar pl-sm">
+                            <div class="form-group form-group--boarding">
+                                <label for="boarding-point">From</label>
+                                <input type="text" id="boarding-point" placeholder="Select boarding point" />
+                                <button class="btn--toggle-src-dest">
+                                    <ion-icon name="swap-horizontal-outline"></ion-icon>
+                                </button>                            
+                            </div>
+                            <div class="form-group form-group--dropping-point">
+                                <label for="dropping-point">To</label>
+                                <input type="text" id="dropping-point" placeholder="Select dropping point" />
+                            </div>
+                            <div class="form-group form-group--boarding-date">
+                                <label for="boarding-date">Date</label>
+                                <input type="date" id="boarding-date" />
+                            </div>
+                            <div>
+                                <button class="btn btn--primary btn--search">
+                                    <ion-icon name="search-outline"></ion-icon>
+                                    <span>Search</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>    
+                </section>   
+                <section class="section--home">
+                    <div class="container container--home">
+                        <h1>Home Page</h1>
+                    </div>    
+                </section>
+            </main>
+        </app-container>
+
+        <!-- COMMOM FOOTER -->
+        <footer>
+            <div class="container container--footer">
+                Copyright &copy;
+            </div>
+        </footer>
+
+        <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+        <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    
+        <!-- COMMON SCRIPT -->
+        <!-- <script type="module" src="./js/main.js" ></script> -->
+    </body>
+</html>

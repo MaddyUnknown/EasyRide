@@ -1,0 +1,17 @@
+{
+  "name": "easyride.user-interface",
+  "version": "1.0.0",
+  "description": "Bus booking UI",
+  "main": "index.html",
+  "scripts": {
+    "start": "babel-node server.js"
+  },
+  "author": "Mehdi Hossain",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.24.8",
+    "@babel/node": "^7.24.8",
+    "@babel/preset-env": "^7.24.8",
+    "express": "^4.19.2"
+  }
+}

@@ -1,150 +1,103 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>EasyRide - Search</title>
-
-        <!-- GOOGLE FONT -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
-
-        <!-- SITE STYLESHEET -->
-        <link rel="stylesheet" href="../css/common.css" />
-    </head>
-    <body>
-        <header class="section--header">
-            <div class="container container--header">
-                <img class="logo" src="../img/logo.png" alt="Website Logo" />
-                <nav class="nav nav--header">
-                    <ul>
-                        <li>
-                            <a class="btn btn--link" href="#">Home</a>
-                        </li>
-                        <li>
-                            <a class="btn btn--link" href="#">Contact Us</a>
-                        </li>
-                        <li>
-                            <a class="btn btn--link container--user-profile" href="#">
-                                <img class="user-profile-pic" src="../img/profile-pic.jpg" alt="User profile pic" />
-                                <ion-icon name="chevron-down-outline"></ion-icon>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
+<main>
+    <section class="section--search-bar">
+        <div class="container container--search-bar">
+            <form class="form--search-bar pl-sm" action="#">
+                <div class="form-group form-group--boarding">
+                    <label for="boarding-point">From</label>
+                    <input type="text" id="boarding-point" placeholder="Select boarding point" />
+                    <button class="btn--toggle-src-dest">
+                        <ion-icon name="swap-horizontal-outline"></ion-icon>
+                    </button>                            
+                </div>
+                <div class="form-group form-group--dropping-point">
+                    <label for="dropping-point">To</label>
+                    <input type="text" id="dropping-point" placeholder="Select dropping point" />
+                </div>
+                <div class="form-group form-group--boarding-date">
+                    <label for="boarding-date">Date</label>
+                    <input type="date" id="boarding-date" />
+                </div>
+                <div>
+                    <button class="btn btn--primary btn--search">
+                        <ion-icon name="search-outline"></ion-icon>
+                        <span>Search</span>
+                    </button>
+                </div>
+            </form>
+        </div>    
+    </section>
+    <div class="container container--main">
+        <section class="section--filters">
+            <div class="header--filter">
+                <p>Filter</p>
+                <p class="btn--filter-reset">(Reset)</p>
             </div>
-        </header>
-        <main>
-            <section class="section--search-bar">
-                <div class="container container--search-bar">
-                    <form class="form--search-bar pl-sm" action="#">
-                        <div class="form-group form-group--boarding">
-                            <label for="boarding-point">From</label>
-                            <input type="text" id="boarding-point" placeholder="Select boarding point" />
-                            <button class="btn--toggle-src-dest">
-                                <ion-icon name="swap-horizontal-outline"></ion-icon>
-                            </button>                            
-                        </div>
-                        <div class="form-group form-group--dropping-point">
-                            <label for="dropping-point">To</label>
-                            <input type="text" id="dropping-point" placeholder="Select dropping point" />
-                        </div>
-                        <div class="form-group form-group--boarding-date">
-                            <label for="boarding-date">Date</label>
-                            <input type="date" id="boarding-date" />
-                        </div>
-                        <div>
-                            <button class="btn btn--primary btn--search">
-                                <ion-icon name="search-outline"></ion-icon>
-                                <span>Search</span>
-                            </button>
-                        </div>
-                    </form>
-                </div>    
-            </section>
-            <div class="container container--main">
-                <section class="section--filters">
-                    <div class="header--filter">
-                        <p>Filter</p>
-                        <p class="btn--filter-reset">(Reset)</p>
-                    </div>
-                    <div class="filter-section">
-                        <p class="filter-heading">Bus type</p>
-                        <ul class="filter-check-list">
-                            <li class="filter-check-item">
-                                <input type="checkbox" id="filter--bus-type-seater"/>
-                                <label for="filter--bus-type-seater">Seater</label>
-                            </li>
-                            <li class="filter-check-item">
-                                <input type="checkbox" id="filter--bus-type-sleaper"/>
-                                <label for="filter--bus-type-sleaper">Sleaper</label>
-                            </li>
-                            <li class="filter-check-item">
-                                <input type="checkbox" id="filter--bus-type-ac"/>
-                                <label for="filter--bus-type-ac">AC</label>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="filter-section">
-                        <p class="filter-heading">Departure time</p>
-                        <ul class="filter-check-list">
-                            <li class="filter-check-item">
-                                <input type="checkbox" id="filter--depart-before-6am"/>
-                                <label for="filter--depart-before-6am">Before 6am</label>
-                            </li>
-                            <li class="filter-check-item">
-                                <input type="checkbox" id="filter--depart-6am-to-12am"/>
-                                <label for="filter--depart-6am-to-12am">6am to 12am</label>
-                            </li>
-                            <li class="filter-check-item">
-                                <input type="checkbox" id="filter--depart-12pm-to-6pm"/>
-                                <label for="filter--depart-12pm-to-6pm">12pm to 6pm</label>
-                            </li>
-                            <li class="filter-check-item">
-                                <input type="checkbox" id="filter--depart-after-6pm"/>
-                                <label for="filter--depart-after-6pm">After 6pm</label>
-                                
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="filter-section">
-                        <p class="filter-heading">Arival time</p>
-                        <ul class="filter-check-list">
-                            <li class="filter-check-item">
-                                <input type="checkbox" id="filter--arrival-before-6am"/>
-                                <label for="filter--arrival-before-6am">Before 6am</label>
-                            </li>
-                            <li class="filter-check-item">
-                                <input type="checkbox" id="filter--arrival-6am-to-12am"/>
-                                <label for="filter--arrival-6am-to-12am">6am to 12am</label>
-                            </li>
-                            <li class="filter-check-item">
-                                <input type="checkbox" id="filter--arrival-12pm-to-6pm"/>
-                                <label for="filter--arrival-12pm-to-6pm">12pm to 6pm</label>
-                            </li>
-                            <li class="filter-check-item">
-                                <input type="checkbox" id="filter--arrival-after-6pm"/>
-                                <label for="filter--arrival-after-6pm">After 6pm</label>
-                                
-                            </li>
-                        </ul>
-                    </div>
-                </section>
-                <section class="section--search-result">
-                    <ul class="search-result-list">
+            <div class="filter-section">
+                <p class="filter-heading">Bus type</p>
+                <ul class="filter-check-list">
+                    <li class="filter-check-item">
+                        <input type="checkbox" id="filter--bus-type-seater"/>
+                        <label for="filter--bus-type-seater">Seater</label>
+                    </li>
+                    <li class="filter-check-item">
+                        <input type="checkbox" id="filter--bus-type-sleaper"/>
+                        <label for="filter--bus-type-sleaper">Sleaper</label>
+                    </li>
+                    <li class="filter-check-item">
+                        <input type="checkbox" id="filter--bus-type-ac"/>
+                        <label for="filter--bus-type-ac">AC</label>
+                    </li>
+                </ul>
+            </div>
+            <div class="filter-section">
+                <p class="filter-heading">Departure time</p>
+                <ul class="filter-check-list">
+                    <li class="filter-check-item">
+                        <input type="checkbox" id="filter--depart-before-6am"/>
+                        <label for="filter--depart-before-6am">Before 6am</label>
+                    </li>
+                    <li class="filter-check-item">
+                        <input type="checkbox" id="filter--depart-6am-to-12am"/>
+                        <label for="filter--depart-6am-to-12am">6am to 12am</label>
+                    </li>
+                    <li class="filter-check-item">
+                        <input type="checkbox" id="filter--depart-12pm-to-6pm"/>
+                        <label for="filter--depart-12pm-to-6pm">12pm to 6pm</label>
+                    </li>
+                    <li class="filter-check-item">
+                        <input type="checkbox" id="filter--depart-after-6pm"/>
+                        <label for="filter--depart-after-6pm">After 6pm</label>
                         
-                    </ul>
-                </section>
+                    </li>
+                </ul>
             </div>
-        </main>
-        <footer>
-            Copyright &copy;
-        </footer>
-
-        <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-        <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-    
-        <script src="../js/search.js" />
-    </body>
-</html>
+            <div class="filter-section">
+                <p class="filter-heading">Arival time</p>
+                <ul class="filter-check-list">
+                    <li class="filter-check-item">
+                        <input type="checkbox" id="filter--arrival-before-6am"/>
+                        <label for="filter--arrival-before-6am">Before 6am</label>
+                    </li>
+                    <li class="filter-check-item">
+                        <input type="checkbox" id="filter--arrival-6am-to-12am"/>
+                        <label for="filter--arrival-6am-to-12am">6am to 12am</label>
+                    </li>
+                    <li class="filter-check-item">
+                        <input type="checkbox" id="filter--arrival-12pm-to-6pm"/>
+                        <label for="filter--arrival-12pm-to-6pm">12pm to 6pm</label>
+                    </li>
+                    <li class="filter-check-item">
+                        <input type="checkbox" id="filter--arrival-after-6pm"/>
+                        <label for="filter--arrival-after-6pm">After 6pm</label>
+                        
+                    </li>
+                </ul>
+            </div>
+        </section>
+        <section class="section--search-result">
+            <ul class="search-result-list">
+                
+            </ul>
+        </section>
+    </div>
+</main>
