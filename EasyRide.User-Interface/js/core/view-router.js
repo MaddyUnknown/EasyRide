@@ -69,9 +69,9 @@ class ViewRouter {
 
     _initRouteLinkClickListner() {
         document.addEventListener('click', function(e) {
-            e.preventDefault();
             const routeString = e.target.closest('[route-link]')?.getAttribute('route-link');
             if(routeString) {
+                e.preventDefault();
                 const route = getRouteFromString(routeString);
                 this.navigateToRoute(route.path, route.queryParams);
             }

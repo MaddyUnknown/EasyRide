@@ -14,8 +14,6 @@ class HomeView extends ViewBase {
 
     init() {
         // add event handler
-        console.log('Called init');
-        console.log("Search From: ", this._searchForm);
         this._searchForm.addEventListener('submit', this._seachBus.bind(this));
 
     }
@@ -26,7 +24,7 @@ class HomeView extends ViewBase {
     }
 
     _seachBus(event) {
-        // event.preventDefault();
+        event.preventDefault();
         const boardingPoint = this._boardingPointInput.value;
         const droppingPoint = this._droppingPointInput.value;
         const boardingDate = this._boardingDateInput.value;
