@@ -8,7 +8,7 @@ class ViewRouterBuilder {
         this._rootContainerSelector = 'app-container';
     }
 
-    registerRoute(routePath, viewPath, componentClass) {
+    registerRoute(routePath, componentClass) {
         if(rootRoute) {
             throw new Error(`Can not add routes as view router already created`);
         }
@@ -16,7 +16,7 @@ class ViewRouterBuilder {
             throw new Error(`Route '${routePath}' is already registered`);
         }
 
-        this._routeMap[routePath] = {routePath, viewPath, componentClass};
+        this._routeMap[routePath] = {routePath, componentClass};
     }
 
     addRootContainerSelector(rootSelector) {

@@ -1,5 +1,6 @@
 :root {
     --primary-color : #5D6AB3;
+
     --primary-color-shade1 : #545fa1;
     --primary-color-shade5 : #2f355a;
     --primary-color-shade7 : #1c2036;
@@ -15,6 +16,21 @@
     --black-color : #000;
 
     --application-red : #EE0000;
+
+    --message-success--dark : #588B3F;
+    --message-success--light : #78A165;
+    --message-success--btn-close : #a3d18d;
+    --message-success--background : #F1F8F1;
+
+    --message-error--dark : #B1312B;
+    --message-error--light : #CC7573;
+    --message-error--btn-close : #E6B4AE;
+    --message-error--background : #FEF3F7;
+
+    --message-warning--dark : #DF8B12;
+    --message-warning--light : #ECB971;
+    --message-warning--btn-close : #FBD64D;
+    --message-warning--background : #FFFFF3;
 
     --transition-time : 0.3s;
 }
@@ -240,7 +256,7 @@ body {
 .btn--toggle-src-dest > ion-icon {
     height: 1.6rem;
     width: 1.6rem;
-    --ionicon-stroke-width: 5.2rem;
+    --ionicon-stroke-width: 3rem;
 }
 
 
@@ -543,4 +559,214 @@ body {
 
 .btn--view-seats:hover, .btn--view-seats:active {
     background-color: var(--primary-color-shade1);
+}
+
+
+/* MESSAGE STYLE */
+.section--message {
+    position: relative;
+}
+
+.container--message {
+    position: absolute;
+    right: 2.4rem;
+    z-index: 999;
+
+    display: flex;
+    flex-direction: column;
+
+    max-width: 30rem;
+    width: 100%;
+    
+    list-style: none;
+}
+
+.message-card {
+    display: flex;
+    gap : 2.4rem;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 0.8rem;
+    padding: 1.2rem;
+
+
+    border-radius: 0.4rem;
+
+    background-color: var(--background-color);
+
+    box-shadow: 0 2.4rem 6.4rem rgba(0, 0, 0, 0.1);
+
+    transition: all var(--transition-time);
+    transform-origin: top;
+}
+
+.message-card.hidden-out {
+    opacity: 0;
+    transform: scale(0,0);
+    height: 0;
+    padding: 0;
+    margin-bottom: 0;
+}
+
+.message-card.hidden-in {
+    opacity: 0;
+}
+
+
+.container--message-body {
+    flex-grow: 1;
+}
+
+.container--message-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 3.6rem;
+}
+
+.message-title {
+    margin-bottom: 0.4rem;
+
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+.message-content {
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+.btn--message-close {
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0;
+    padding: 0;
+    border: none;
+    background-color: inherit;
+
+    font-size: 1.8rem;
+
+    transition: all var(--transition-time);
+}
+
+.btn--message-close > ion-icon {
+    --ionicon-stroke-width : 6.2rem;
+}
+
+.message-card {
+    background-color: var(--background-color);
+    border: var(--dark-grey) solid 0.1rem;
+}
+
+.message-card .message-title {
+    color: var(--black-color);
+}
+
+.message-card .message-content {
+    color: var(--dark-grey);
+}
+
+.message-card .container--message-icon {
+    color: var(--black-color);
+}
+
+.message-card .btn--message-close,
+.message-card .btn--message-close:visited {
+    color: var(--dark-grey);
+}
+
+.message-card .btn--message-close:hover,
+.message-card .btn--message-close:active {
+    color: var(--black-color);
+}
+
+
+.message-card.message-card--success {
+    background-color: var(--message-success--background);
+    border: var(--message-success--dark) solid 0.1rem;
+}
+
+.message-card.message-card--success .message-title {
+    color: var(--message-success--dark);
+}
+
+.message-card.message-card--success .message-content {
+    color: var(--message-success--light);
+}
+
+.message-card.message-card--success .container--message-icon {
+    color: var(--message-success--dark);
+}
+
+.message-card.message-card--success .btn--message-close,
+.message-card.message-card--success .btn--message-close:visited {
+    color: var(--message-success--btn-close);
+}
+
+.message-card.message-card--success .btn--message-close:hover,
+.message-card.message-card--success .btn--message-close:active {
+    color: var(--message-success--dark);
+}
+
+
+.message-card.message-card--error {
+    background-color: var(--message-error--background);
+    border: var(--message-error--dark) solid 0.1rem;
+    
+}
+
+.message-card.message-card--error .message-title {
+    color: var(--message-error--dark);
+}
+
+.message-card.message-card--error .message-content {
+    color: var(--message-error--light);
+}
+
+.message-card.message-card--error .container--message-icon {
+    color: var(--message-error--dark);
+}
+
+.message-card.message-card--error .btn--message-close,
+.message-card.message-card--error .btn--message-close:visited {
+    color: var(--message-error--btn-close);
+}
+
+.message-card.message-card--error .btn--message-close:hover,
+.message-card.message-card--error .btn--message-close:active {
+    color: var(--message-error--dark);
+}
+
+
+.message-card.message-card--warning {
+    background-color: var(--message-warning--background);
+    border: var(--message-warning--dark) solid 0.1rem;
+}
+
+.message-card.message-card--warning .message-title {
+    color: var(--message-warning--dark);
+}
+
+.message-card.message-card--warning .message-content {
+    color: var(--message-warning--light);
+}
+
+.message-card.message-card--warning .container--message-icon {
+    color: var(--message-warning--dark);
+}
+
+.message-card.message-card--warning .btn--message-close,
+.message-card.message-card--warning .btn--message-close:visited {
+    color: var(--message-warning--btn-close);
+}
+
+.message-card.message-card--warning .btn--message-close:hover,
+.message-card.message-card--warning .btn--message-close:active {
+    color: var(--message-warning--dark);
 }
