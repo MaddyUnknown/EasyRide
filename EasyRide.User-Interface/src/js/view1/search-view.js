@@ -1,5 +1,5 @@
 import {ViewBase} from '../core/view.js';
-import {viewRouterAccessor} from '../core/view-router.js';
+import {viewRouterAccessor} from '../modules/RouteModule.js';
 
 class SearchView extends ViewBase {
     constructor(state) {

@@ -1,0 +1,5 @@
+class SearchPageView {
+
+}
+
+export {SearchPageView};

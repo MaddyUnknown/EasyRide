@@ -1,0 +1,5 @@
+class HomePageView {
+
+}
+
+export {HomePageView};

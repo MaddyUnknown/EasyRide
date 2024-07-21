@@ -1,13 +1,17 @@
 import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-console.log(__dirname);
+const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+const __dirname = path.dirname(__filename); // get the name of the directory
+const appPath = path.join(__dirname, 'dist');
 
-app.use(express.static(__dirname));
+app.use(express.static(appPath));
 app.use((req, res) => {
-    res.sendFile(__dirname + '/index.html');
+    res.sendFile(appPath + '/index.html');
 })
 
 app.listen(port, () => {
