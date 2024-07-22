@@ -6,6 +6,7 @@ const EMPTY_TEMPLATE = '';
 class PagePanelController {
     constructor() {
         this._pagePanelView = new PagePanelView();
+        this._activePage = null;
     }
 
 
@@ -16,7 +17,16 @@ class PagePanelController {
             throw new Error(`'PageControllerClass' has not page template configured`);
         }
 
+        if(this._activePage !== null) {
+            this._activePage.destroy();
+        }
+
         this._pagePanelView.setPageHTML(pageControllerClass.$PAGE_TEMPLATE);
+        
+        const controller = new pageControllerClass();
+        controller.init();
+
+        this._activePage = controller;
     }
 }
 

@@ -1,6 +1,7 @@
-import { UrlUtils } from '../utils/urlUtils.js';
-import { InvalidRouteError, RouteExistsError, RouteNotFoundError } from './errorModule.js';
-import { pagePanelController } from '../panel/pagePanel/pagePanel.controller.js';
+import { UrlUtils } from '../utils/urlUtils';
+import { HistoryUtils } from '../utils/historyUtils';
+import { InvalidRouteError, RouteExistsError, RouteNotFoundError } from './errorModule';
+import { pagePanelController } from '../panel/pagePanel/pagePanel.controller';
 
 class RouterBuilder {
     constructor() {
@@ -59,6 +60,7 @@ class Router {
             this._currentRoute = this._routeMap.getErrorRoute();
         }
 
+        HistoryUtils.addNewState({path: this._currentRoute.path});
         pagePanelController.setPage(this._currentRoute.pageControllerClass);
     }
 
@@ -81,12 +83,13 @@ class Router {
             }
         }
         
+        HistoryUtils.updateCurrentState({path: this._currentRoute.path});
         pagePanelController.setPage(this._currentRoute.pageControllerClass);
     }
 
     _initRouteChangeListner() {
         window.addEventListener('popstate', (e) => {
-            ({ path } = e.state)
+            const { path } = e.state;
             const pathSegmentList = UrlUtils.createPathSegmentListFromPath(path);
             this._currentRoute = this._routeMap.get(pathSegmentList);
             pagePanelController.setPage(this._currentRoute.pageControllerClass);
