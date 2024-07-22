@@ -3,7 +3,7 @@ import { PageControllerBase } from "../../modules/viewModule";
 import { SearchPageView } from "./search.view";
 
 class SearchPageController extends PageControllerBase {
-    static $VIEW_TEMPLATE = html;
+    static $PAGE_TEMPLATE = html;
 
     constructor() {
         this._searchPageView = new SearchPageView();

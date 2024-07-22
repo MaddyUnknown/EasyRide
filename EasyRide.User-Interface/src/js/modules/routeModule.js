@@ -5,15 +5,9 @@ import { pagePanelController } from '../panel/pagePanel/pagePanel.controller.js'
 class RouterBuilder {
     constructor() {
         this._routeMap = new RouteMap();
-        this._routeDOMContainer = 'app-container';
     }
 
-    set $ROUTER_CONTAINER_SELECTOR(value) {
-        this._initializationValidation();
-        this._routeDOMContainer = value;
-    }
-
-    registerRoute(path, componentClass, { isDefault=false, isErrorRoute=false } = {}) {
+    registerRoute(path, pageControllerClass, { isDefault=false, isErrorRoute=false } = {}) {
         this._initializationValidation();
 
         if(!UrlUtils.isValidPath(path, true)) {
@@ -24,18 +18,13 @@ class RouterBuilder {
         }
 
         const pathSegmentList = UrlUtils.createPathSegmentListFromPath(path);
-        this._routeMap.set(pathSegmentList, componentClass, {isDefault, isErrorRoute});
+        this._routeMap.set(pathSegmentList, pageControllerClass, {isDefault, isErrorRoute});
     }
 
     build() {
         this._initializationValidation();
 
-        const routerContainer = document.querySelector(this._routeDOMContainer);
-        if(!routerContainer) {
-            throw new Error(`Router build failed: Selector '${this._routeDOMContainer}' not found in DOM`);
-        }
-
-        router = new Router(routerContainer, this._routeMap);
+        router = new Router(this._routeMap);
         isRouterInitialized = true;
         router.init();
     }
@@ -49,9 +38,8 @@ class RouterBuilder {
 
 
 class Router {
-    constructor(routeContainer, routeMap) {
+    constructor(routeMap) {
         this._routeMap = routeMap;
-        this._routeDOMContainer = routeContainer;
         this._currentRoute = null;
     }
 
@@ -71,11 +59,7 @@ class Router {
             this._currentRoute = this._routeMap.getErrorRoute();
         }
 
-        pagePanelController.setComponent(this._currentRoute.componentClass);
-    }
-
-    get $ROUTER_CONTAINER() {
-        return this._routeDOMContainer;
+        pagePanelController.setPage(this._currentRoute.pageControllerClass);
     }
 
     _initRoute() {
@@ -97,7 +81,7 @@ class Router {
             }
         }
         
-        pagePanelController.setComponent(this._currentRoute.componentClass);
+        pagePanelController.setPage(this._currentRoute.pageControllerClass);
     }
 
     _initRouteChangeListner() {
@@ -105,7 +89,7 @@ class Router {
             ({ path } = e.state)
             const pathSegmentList = UrlUtils.createPathSegmentListFromPath(path);
             this._currentRoute = this._routeMap.get(pathSegmentList);
-            pagePanelController.setComponent(this._currentRoute.componentClass);
+            pagePanelController.setPage(this._currentRoute.pageControllerClass);
         });
     }
 }
@@ -118,7 +102,7 @@ class RouteMap {
         this._errorRoute = null;
     }
 
-    set(pathSegmentList, componentClass, {isDefault=false, isErrorRoute=false} = {}) {
+    set(pathSegmentList, pageControllerClass, {isDefault=false, isErrorRoute=false} = {}) {
         if(isDefault && this._defaultRoute !== null) {
             throw new RouteExistsError(`Default route already registered`, 'default');
         } else if(isErrorRoute && this._errorRoute !== null) {
@@ -139,7 +123,7 @@ class RouteMap {
 
         const pathString = UrlUtils.createPathFromPathSegmentList(pathSegmentList);
         if(currentPointer.routeData === null) {
-            currentPointer.routeData = { path: pathString, componentClass};
+            currentPointer.routeData = { path: pathString, pageControllerClass};
             if(isDefault) {
                 this._defaultRoute = currentPointer.routeData;
             }

@@ -1,9 +1,9 @@
-const VIEW_COMPONENT = 'VIEW-COMPONENT';
+const PAGE_CONTROLLER = 'PAGE-COMPONENT';
 const EMPTY_TEMPLATE = '';
 
 class PageControllerBase {
-    static $TYPE = VIEW_COMPONENT;
-    static $VIEW_TEMPLATE = EMPTY_TEMPLATE;
+    static $TYPE = PAGE_CONTROLLER;
+    static $PAGE_TEMPLATE = EMPTY_TEMPLATE;
 
     init() {
 
