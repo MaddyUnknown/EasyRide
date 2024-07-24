@@ -1,6 +1,7 @@
 import html from "bundle-text:../../../html/search.html";
 import { PageControllerBase } from "../../modules/viewModule";
 import { SearchPageView } from "./search.view";
+import { router } from "../../modules/routeModule";
 
 class SearchPageController extends PageControllerBase {
     static $PAGE_TEMPLATE = html;
@@ -13,6 +14,7 @@ class SearchPageController extends PageControllerBase {
     init() {
         this._searchPageView.addFilterSectionResizeHandler();
         this._searchPageView.addSearchBusEventHandler(this.searchBusHanlder.bind(this));
+        this._searchPageView.addToggleSourceDestinationHandler();
 
         this._searchPageView.setSearchResultData(this._getDataForSearchParam());
     }
@@ -20,6 +22,7 @@ class SearchPageController extends PageControllerBase {
     destroy() {
         this._searchPageView.removeFilterSectionResizeHandler();
         this._searchPageView.removeAllSearchBusEventHandler();
+        this._searchPageView.removeToggleSourceDestinationHandler();
     }
 
     searchBusHanlder() {
@@ -29,7 +32,13 @@ class SearchPageController extends PageControllerBase {
 
         console.log('Search: ', boardingPoint, droppingPoint, boardingDate);
 
-        router.navigateToRoute('/search');
+        router.navigateToRoute('/search', {
+            queryParams : {
+                boardingPoint,
+                droppingPoint,
+                boardingDate
+            }
+        });
     }
 
     _getDataForSearchParam() {

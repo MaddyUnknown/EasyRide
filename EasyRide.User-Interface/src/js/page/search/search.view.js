@@ -4,6 +4,7 @@ class SearchPageView {
         this._boardingPointInput = document.querySelector('#boarding-point');
         this._droppingPointInput = document.querySelector('#dropping-point');
         this._boardingDateInput = document.querySelector('#boarding-date');
+        this._toggleLocationBtn = document.querySelector('.btn--toggle-src-dest');
 
         this._searchResultContainer = document.querySelector('.search-result-list');
 
@@ -53,6 +54,20 @@ class SearchPageView {
         }
 
         this._searchBusHandlers = [];
+    }
+
+    addToggleSourceDestinationHandler() {
+        this._toggleLocationBtn.addEventListener('click', this._toggleSourceDestinationHandler.bind(this));
+    }
+
+    removeToggleSourceDestinationHandler() {
+        this._toggleLocationBtn.removeEventListener('click', this._toggleSourceDestinationHandler.bind(this));
+    }
+
+    _toggleSourceDestinationHandler() {
+        const source = this._boardingPointInput.value;
+        this._boardingPointInput.value = this._droppingPointInput.value;
+        this._droppingPointInput.value = source;
     }
 
     addFilterSectionResizeHandler() {

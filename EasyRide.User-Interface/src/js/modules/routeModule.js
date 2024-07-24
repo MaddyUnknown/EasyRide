@@ -1,6 +1,6 @@
 import { UrlUtils } from '../utils/urlUtils';
 import { HistoryUtils } from '../utils/historyUtils';
-import { InvalidRouteError, RouteExistsError, RouteNotFoundError } from './errorModule';
+import { InvalidRouteError, RouteExistsError, RouteNotFoundError, InvalidQueryStringError, InvalidQueryParamError, ApplicationError, RouteError } from './errorModule';
 import { pagePanelController } from '../panel/pagePanel/pagePanel.controller';
 
 class RouterBuilder {
@@ -12,10 +12,10 @@ class RouterBuilder {
         this._initializationValidation();
 
         if(!UrlUtils.isValidPath(path, true)) {
-            throw new InvalidRouteError(`'${path}' is not a valid root path`);
+            throw new InvalidRouteError(path, true);
         }
         else if(this._routeMap.has(path)) {
-            throw new Error(`Route '${path}' already registered`);
+            throw new RouteExistsError(path);
         }
 
         const pathSegmentList = UrlUtils.createPathSegmentListFromPath(path);
@@ -42,6 +42,7 @@ class Router {
     constructor(routeMap) {
         this._routeMap = routeMap;
         this._currentRoute = null;
+        this._currentQueryParams = null;
     }
 
     init() {
@@ -49,49 +50,88 @@ class Router {
         this._initRouteChangeListner();
     }
 
-    navigateToRoute(path) {
+    navigateToRoute(path, {queryParams = {}} = {}) {
         try {
             const pathSegmentList = UrlUtils.createPathSegmentListFromPath(path);
             const newPathSegmentList = UrlUtils.createNewPathSegmentList(this._currentRoute.path, pathSegmentList);
             this._currentRoute = this._routeMap.get(newPathSegmentList);
+            
+            const errorObj = {keys:[], values:[]};
+            if(UrlUtils.isValidQueryParamMap(queryParams, errorObj)) {
+                this._currentQueryParams = queryParams;
+            } else {
+                throw new InvalidQueryParamError(errorObj);
+            }
         }
-        catch {
-            console.error(`Route not found for path: ${path}, routing to error route`);
+        catch(error) {
+            if(error instanceof ApplicationError) {
+                console.error(error.message);
+            }
+            else {
+                console.error(`Error while routing to '${path}', routing to error route`);
+            }
+            
             this._currentRoute = this._routeMap.getErrorRoute();
+            this._currentQueryParams = {};
         }
 
-        HistoryUtils.addNewState({path: this._currentRoute.path});
+        HistoryUtils.addNewState({path: this._currentRoute.path, queryParams : this._currentQueryParams});
         pagePanelController.setPage(this._currentRoute.pageControllerClass);
+    }
+
+    get queryParams() {
+        return this._currentQueryParams;
     }
 
     _initRoute() {
         const path = window.location.pathname;
+        const queyString = window.location.search;
         
         try {
             const pathSegmentList = UrlUtils.createPathSegmentListFromPath(path);
             this._currentRoute = this._routeMap.get(pathSegmentList);
+            
+            const queyParams = UrlUtils.createQueryMapFromQueryString(queyString);
+            this._currentQueryParams = queyParams;
         }
         catch(error) {
-            console.error(`Route not found for path: '${path}', routing to default route`);
-            
-            try {
-                this._currentRoute = this._routeMap.getDefaultRoute();
-            }
-            catch(error2) {
-                console.error(`Defaut route not found, routing to error route`);
-                this._currentRoute = this._routeMap.getErrorRoute();
+            if(error instanceof InvalidQueryError) {
+                console.error(error.message);
+                this._currentQueryParams = {};
+            } else {
+                
+                if(error instanceof ApplicationError) {
+                    console.error(error.message);
+                } else {
+                    console.error(`Error while routing to '${path}', routing to default route`);
+                }
+                
+                try {
+                    this._currentRoute = this._routeMap.getDefaultRoute();
+                } catch(innerError) {
+                    if(innerError instanceof ApplicationError) {
+                        console.error(innerError.message);
+                    } else {
+                        console.error(`Error while routing to default path, routing to error route`);
+                        this._currentRoute = this._routeMap.getErrorRoute();
+                    }
+                }
+
+                this._currentQueryParams = {};
             }
         }
         
-        HistoryUtils.updateCurrentState({path: this._currentRoute.path});
+        HistoryUtils.updateCurrentState({path: this._currentRoute.path, queryParams : this._currentQueryParams});
         pagePanelController.setPage(this._currentRoute.pageControllerClass);
     }
 
     _initRouteChangeListner() {
         window.addEventListener('popstate', (e) => {
-            const { path } = e.state;
+            const { path, queryParams } = e.state;
             const pathSegmentList = UrlUtils.createPathSegmentListFromPath(path);
             this._currentRoute = this._routeMap.get(pathSegmentList);
+            this._currentQueryParams = queryParams;
+
             pagePanelController.setPage(this._currentRoute.pageControllerClass);
         });
     }
@@ -107,9 +147,9 @@ class RouteMap {
 
     set(pathSegmentList, pageControllerClass, {isDefault=false, isErrorRoute=false} = {}) {
         if(isDefault && this._defaultRoute !== null) {
-            throw new RouteExistsError(`Default route already registered`, 'default');
+            throw new RouteExistsError('default');
         } else if(isErrorRoute && this._errorRoute !== null) {
-            throw new RouteExistsError(`Error route already registered`, 'error');
+            throw new RouteExistsError('error');
         }
 
         let currentPointer = this._root;
@@ -134,7 +174,7 @@ class RouteMap {
                 this._errorRoute = currentPointer.routeData;
             }
         } else {
-            throw new RouteExistsError(`Route for path: '${pathString}' already registered`, pathString);
+            throw new RouteExistsError(pathString);
         }
     }
 
@@ -144,12 +184,12 @@ class RouteMap {
         for(const segment of pathSegmentList) {
             currentPointer = currentPointer.children.find(x=> x.segment === segment); // try binary search
             if(!currentPointer) {
-                throw new RouteNotFoundError(`Route not found for path: ${pathString}`, pathString);
+                throw new RouteNotFoundError(pathString);
             }
         }
 
         if(currentPointer.routeData === null) {
-            throw new RouteNotFoundError(`Route not found for path: ${pathString}`, pathString);
+            throw new RouteNotFoundError(pathString);
         } else {
             return currentPointer.routeData;
         }
@@ -173,7 +213,7 @@ class RouteMap {
 
     getDefaultRoute() {
         if(this._defaultRoute === null) {
-            throw new RouteNotFoundError(`Default route not found`, 'default');
+            throw new RouteNotFoundError('default');
         }
 
         return this._defaultRoute;
@@ -181,7 +221,7 @@ class RouteMap {
 
     getErrorRoute() {
         if(this._errorRoute === null) {
-            throw new RouteNotFoundError(`Error route not found`, 'error');
+            throw new RouteNotFoundError('error');
         }
 
         return this._errorRoute;

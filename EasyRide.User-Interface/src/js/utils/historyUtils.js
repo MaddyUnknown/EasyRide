@@ -1,10 +1,14 @@
+import { UrlUtils } from "./urlUtils";
+
 class HistoryUtils {
     static addNewState(state) {
-        history.pushState(state, '', state.path);
+        let queryString = UrlUtils.createQueryStringFromQueryMap(state.queryParams??{});
+        history.pushState(state, '', state.path+queryString);
     }
     
     static updateCurrentState(state) {
-        history.replaceState(state, '', state.path);
+        let queryString = UrlUtils.createQueryStringFromQueryMap(state.queryParams??{});
+        history.replaceState(state, '', state.path+queryString);
     }
 }
 
