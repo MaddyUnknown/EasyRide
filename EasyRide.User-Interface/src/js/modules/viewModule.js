@@ -1,9 +1,10 @@
-const PAGE_CONTROLLER = 'PAGE-COMPONENT';
-const EMPTY_TEMPLATE = '';
+class ViewType {
+    static COMPONENT = 'Component';
+    static PANEL = 'Panel';
+}
 
-class PageControllerBase {
-    static $TYPE = PAGE_CONTROLLER;
-    static $PAGE_TEMPLATE = EMPTY_TEMPLATE;
+class ViewBase {
+    static $TYPE = ViewType.COMPONENT;
 
     init() {
 
@@ -14,6 +15,13 @@ class PageControllerBase {
     }
 }
 
+class PanelViewBase extends ViewBase {
+    static $TYPE = ViewType.PANEL;
+
+    static get $PANEL_TEMPLATE() {
+        return null;
+    }
+}
 
 class MessageInfoComponent {
     constructor() {
@@ -107,4 +115,4 @@ class MessageInfoComponent {
 
 const messageInfoComponent = new MessageInfoComponent();
 
-export { PageControllerBase, messageInfoComponent };
+export { ViewType, ViewBase, PanelViewBase, messageInfoComponent };

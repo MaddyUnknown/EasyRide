@@ -770,3 +770,45 @@ body {
 .message-card.message-card--warning .btn--message-close:active {
     color: var(--message-warning--dark);
 }
+
+.error-message--form {
+    position: absolute;
+    bottom: -1.8rem;
+
+    color: var(--application-red);
+
+    font-size: 1.2rem;
+
+    opacity: 0;
+
+    transition: opacity var(--transition-time) ease-in-out;
+}
+
+.error-message--form.show {
+    opacity: 1;
+}
+
+.shake-animation {
+    animation: shake-animation calc(var(--transition-time)*2) ease-in-out forwards;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+@keyframes shake-animation {
+    10%, 90% {
+        transform: translateX(-1px);
+    }
+
+    20%, 80% {
+        transform: translateX(2px);
+    }
+
+    30%, 50%, 70% {
+        transform: translateX(-4px);
+    }
+
+    40%, 60% {
+        transform: translateX(4px);
+    }
+}

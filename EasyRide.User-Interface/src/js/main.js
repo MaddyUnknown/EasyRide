@@ -1,17 +1,19 @@
 'use strict';
 
 import {routerBuilder} from './modules/routeModule.js';
-import {SearchPageController} from './page/search/search.controller.js';
-import {HomePageController} from './page/home/home.controller.js';
-import {messageInfoComponent} from './modules/viewModule.js';
+import { SearchPanelView } from './panel/search/search.view.js';
+import { HomePanelView } from './panel/home/home.view.js';
+import { MainPageView } from './page.view.js';
 
-
-routerBuilder.registerRoute('/', HomePageController, { isDefault : true });
-routerBuilder.registerRoute('/search', SearchPageController);
-
-// messageInfoComponent.addSuccessMessage('Successfully Updated data');
-// // // messageInfoComponent.addMessage("Alone", "Testing", "");
-// setTimeout(() => messageInfoComponent.addErrorMessage('Error while updating data'), 1000);
-// setTimeout(() => messageInfoComponent.addWarningMessage('Validation error'), 2000);
-
+// Build router
+routerBuilder.registerRoute('/', HomePanelView, { isDefault : true });
+routerBuilder.registerRoute('/search', SearchPanelView);
 routerBuilder.build();
+
+//Initiate main page
+const mainPage = new MainPageView();
+mainPage.init();
+
+document.addEventListener('beforeunload', (e) => {
+    mainPage.destroy();
+});

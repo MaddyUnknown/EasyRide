@@ -1,83 +1,57 @@
-class SearchPageView {
+import html from "bundle-text:../../../html/search.html";
+
+import { SearchBoxView } from "../../components/searchBox/searchBox.view";
+import { PanelViewBase } from "../../modules/viewModule";
+import { SearchPanelPresenter } from "./search.presenter";
+
+class SearchPanelView extends PanelViewBase {
     constructor() {
-        this._searchForm = document.querySelector('.form--search-bar');
-        this._boardingPointInput = document.querySelector('#boarding-point');
-        this._droppingPointInput = document.querySelector('#dropping-point');
-        this._boardingDateInput = document.querySelector('#boarding-date');
-        this._toggleLocationBtn = document.querySelector('.btn--toggle-src-dest');
-
-        this._searchResultContainer = document.querySelector('.search-result-list');
-
-        this._searchBusHandlers = [];
-
-
-        this._resolveFilterSectionScrollVisibality();
+        super();
+        this._presenter = new SearchPanelPresenter(this);
+        this._searchBox = new SearchBoxView();
     }
 
-    get boardingPoint() {
-        return this._boardingPointInput.value;
-    }
-
-    set boardingPoint(value) {
-        this._boardingPointInput.value = value;
-    }
-
-    get droppingPoint() {
-        return this._droppingPointInput.value;
-    }
-
-    set droppingPoint(value) {
-        this._droppingPointInput.value = value;
-    }
-
-    get boardingDate() {
-        return this._boardingDateInput.value;
-    }
-
-    set boardingDate(value) {
-        this._boardingDateInput.value = value;
-    }
-
-    addSearchBusEventHandler(handler) {
-        const fun = (e) => {
-            e.preventDefault();
-            handler();
-        };
-
-        this._searchBusHandlers.push(fun);
-        this._searchForm.addEventListener('submit', fun);
-    }
-
-    removeAllSearchBusEventHandler() {
-        for(const fun of this._searchBusHandlers) {
-            this._searchForm.removeEventListener('submit', fun);
+    static get $PANEL_TEMPLATE() {
+        if(!SearchPanelView._pageTemplate) {
+            const template = document.createElement('template');
+            const contentStr = html.trim();
+            template.innerHTML = contentStr;
+            SearchPanelView._pageTemplate = template;
         }
 
-        this._searchBusHandlers = [];
+        return SearchPanelView._pageTemplate.content.cloneNode(true);
     }
 
-    addToggleSourceDestinationHandler() {
-        this._toggleLocationBtn.addEventListener('click', this._toggleSourceDestinationHandler.bind(this));
+    init() {
+        this._searchResultContainer = document.querySelector('.search-result-list');
+        this._resolveFilterSectionScrollVisibality();
+        
+        this._addFilterSectionResizeHandler();
+        this._searchBox.init();
+        this._presenter.init();
     }
 
-    removeToggleSourceDestinationHandler() {
-        this._toggleLocationBtn.removeEventListener('click', this._toggleSourceDestinationHandler.bind(this));
+    destroy() {
+        this._presenter.destroy();
+        this._searchBox.destroy();
+        this._removeFilterSectionResizeHandler();
     }
 
-    _toggleSourceDestinationHandler() {
-        const source = this._boardingPointInput.value;
-        this._boardingPointInput.value = this._droppingPointInput.value;
-        this._droppingPointInput.value = source;
+    addSearchBusHandler(handler) {
+        this._searchBox.addSearchHandler(handler);
     }
 
-    addFilterSectionResizeHandler() {
-        window.addEventListener('resize', this._resolveFilterSectionScrollVisibality.bind(this));
+    removeSearchBusHandler(handler) {
+        this._searchBox.removeSearchHandler(handler);
     }
 
-    removeFilterSectionResizeHandler() {
-        window.removeEventListener('resize', this._resolveFilterSectionScrollVisibality.bind(this));
+    get searchData() {
+        return this._searchBox.formData;
     }
 
+    set searchData(value) {
+        this._searchBox.formData = value;
+    }
 
     setSearchResultData(searchResultList) {
         for(const searchItem of searchResultList) {
@@ -85,6 +59,13 @@ class SearchPageView {
         }
     }
 
+    _addFilterSectionResizeHandler() {
+        window.addEventListener('resize', this._resolveFilterSectionScrollVisibality.bind(this));
+    }
+
+    _removeFilterSectionResizeHandler() {
+        window.removeEventListener('resize', this._resolveFilterSectionScrollVisibality.bind(this));
+    }
 
     _resolveFilterSectionScrollVisibality() {
         const viewportHeight = window.innerHeight;
@@ -150,4 +131,4 @@ class SearchPageView {
     }
 }
 
-export {SearchPageView};
+export {SearchPanelView};

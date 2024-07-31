@@ -1,14 +1,13 @@
 import { UrlUtils } from '../utils/urlUtils';
 import { HistoryUtils } from '../utils/historyUtils';
-import { InvalidRouteError, RouteExistsError, RouteNotFoundError, InvalidQueryStringError, InvalidQueryParamError, ApplicationError, RouteError } from './errorModule';
-import { pagePanelController } from '../panel/pagePanel/pagePanel.controller';
+import { InvalidRouteError, RouteExistsError, RouteNotFoundError, InvalidQueryParamError, ApplicationError } from './errorModule';
 
 class RouterBuilder {
     constructor() {
         this._routeMap = new RouteMap();
     }
 
-    registerRoute(path, pageControllerClass, { isDefault=false, isErrorRoute=false } = {}) {
+    registerRoute(path, routePanelView, { isDefault=false, isErrorRoute=false } = {}) {
         this._initializationValidation();
 
         if(!UrlUtils.isValidPath(path, true)) {
@@ -19,7 +18,7 @@ class RouterBuilder {
         }
 
         const pathSegmentList = UrlUtils.createPathSegmentListFromPath(path);
-        this._routeMap.set(pathSegmentList, pageControllerClass, {isDefault, isErrorRoute});
+        this._routeMap.set(pathSegmentList, routePanelView, {isDefault, isErrorRoute});
     }
 
     build() {
@@ -46,8 +45,20 @@ class Router {
     }
 
     init() {
+        this._routeChangeEventHandlers = [];
         this._initRoute();
-        this._initRouteChangeListner();
+        this._initUrlChangeListner();
+    }
+
+    addRouteChangeHandler(handler) {
+        this._routeChangeEventHandlers.push(handler);
+    }
+
+    removeRouteChangeHandler(handler) {
+        const index = this._routeChangeEventHandlers.findIndex(handler);
+        if(index !== -1) {
+            this._routeChangeEventHandlers.splice(index, 1);
+        }
     }
 
     navigateToRoute(path, {queryParams = {}} = {}) {
@@ -76,7 +87,11 @@ class Router {
         }
 
         HistoryUtils.addNewState({path: this._currentRoute.path, queryParams : this._currentQueryParams});
-        pagePanelController.setPage(this._currentRoute.pageControllerClass);
+        this._triggerRouteChange();
+    }
+
+    get currentRouteData() {
+        return Object.assign({}, this._currentRoute);
     }
 
     get queryParams() {
@@ -122,18 +137,25 @@ class Router {
         }
         
         HistoryUtils.updateCurrentState({path: this._currentRoute.path, queryParams : this._currentQueryParams});
-        pagePanelController.setPage(this._currentRoute.pageControllerClass);
+        this._triggerRouteChange();
     }
 
-    _initRouteChangeListner() {
+    _initUrlChangeListner() {
         window.addEventListener('popstate', (e) => {
             const { path, queryParams } = e.state;
             const pathSegmentList = UrlUtils.createPathSegmentListFromPath(path);
             this._currentRoute = this._routeMap.get(pathSegmentList);
             this._currentQueryParams = queryParams;
 
-            pagePanelController.setPage(this._currentRoute.pageControllerClass);
+            this._triggerRouteChange();
         });
+    }
+
+    _triggerRouteChange() {
+        const eventData = this.currentRouteData;
+        this._routeChangeEventHandlers.forEach(handler => {
+            handler(eventData);
+        })
     }
 }
 
@@ -145,7 +167,7 @@ class RouteMap {
         this._errorRoute = null;
     }
 
-    set(pathSegmentList, pageControllerClass, {isDefault=false, isErrorRoute=false} = {}) {
+    set(pathSegmentList, routePanelView, {isDefault=false, isErrorRoute=false} = {}) {
         if(isDefault && this._defaultRoute !== null) {
             throw new RouteExistsError('default');
         } else if(isErrorRoute && this._errorRoute !== null) {
@@ -166,7 +188,7 @@ class RouteMap {
 
         const pathString = UrlUtils.createPathFromPathSegmentList(pathSegmentList);
         if(currentPointer.routeData === null) {
-            currentPointer.routeData = { path: pathString, pageControllerClass};
+            currentPointer.routeData = { path: pathString, routePanelView};
             if(isDefault) {
                 this._defaultRoute = currentPointer.routeData;
             }

@@ -1,0 +1,28 @@
+<div class="component--search-bar">
+    <form class="form--search-bar pl-sm" novalidate>
+        <div class="form-group form-group--boarding">
+            <label for="boarding-point">From</label>
+            <input type="text" id="boarding-point" placeholder="Select boarding point"/>
+            <div class="error-message--form" data-input-id="boarding-point"></div>
+            <button class="btn--toggle-src-dest" type="button">
+                <ion-icon name="swap-horizontal-outline"></ion-icon>
+            </button>                            
+        </div>
+        <div class="form-group form-group--dropping-point">
+            <label for="dropping-point">To</label>
+            <input type="text" id="dropping-point" placeholder="Select dropping point"/>
+            <div class="error-message--form" data-input-id="dropping-point"></div>
+        </div>
+        <div class="form-group form-group--boarding-date">
+            <label for="boarding-date">Date</label>
+            <input type="date" id="boarding-date"/>
+            <div class="error-message--form" data-input-id="boarding-date"></div>
+        </div>
+        <div>
+            <button class="btn btn--search">
+                <ion-icon name="search-outline"></ion-icon>
+                <span>Search</span>
+            </button>
+        </div>
+    </form>
+</div>

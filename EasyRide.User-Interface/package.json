@@ -10,8 +10,10 @@
   "author": "Mehdi Hossain",
   "license": "ISC",
   "devDependencies": {
+    "@parcel/transformer-inline-string": "^2.12.0",
     "express": "^4.19.2",
     "parcel": "^2.12.0",
-    "@parcel/transformer-inline-string": "^2.12.0"
+    "posthtml": "^0.16.6",
+    "posthtml-include": "^2.0.1"
   }
 }

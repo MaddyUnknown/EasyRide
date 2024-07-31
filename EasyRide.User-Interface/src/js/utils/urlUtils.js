@@ -126,7 +126,7 @@ class UrlUtils {
         const errorObj = {keys: [], values: []};
         if(!this.isValidQueryParamMap(queryMap, errorObj)) {
             // throw new type of error;
-            throw new InvalidQueryParamErrorError(errorObj);
+            throw new InvalidQueryParamError(errorObj);
         }
 
         const queryParams = Object.entries(queryMap).map(([key, value]) => {

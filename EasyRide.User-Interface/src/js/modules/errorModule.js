@@ -64,4 +64,24 @@ class InvalidQueryStringError extends QueryStringError {
     }
 }
 
-export {ApplicationError, RouteError, QueryParamError, QueryStringError, RouteNotFoundError, InvalidRouteError, RouteExistsError, InvalidQueryParamError, InvalidQueryStringError};
+class InvalidArgumentError extends ApplicationError {
+    constructor(argumentName, value) {
+        super(`Invalid argument '${argumentName}' with value '${value}'`);
+        this.argumentName = argumentName;
+        this.value = value;
+        Error.captureStackTrace(this, this.constructor);
+    }
+}
+
+export { 
+    ApplicationError, 
+    RouteError, 
+    QueryParamError, 
+    QueryStringError, 
+    RouteNotFoundError, 
+    InvalidRouteError, 
+    RouteExistsError, 
+    InvalidQueryParamError, 
+    InvalidQueryStringError, 
+    InvalidArgumentError
+};
