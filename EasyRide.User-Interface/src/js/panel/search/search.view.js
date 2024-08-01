@@ -1,8 +1,10 @@
 import html from "bundle-text:../../../html/search.html";
+import searchItemTemplate from "bundle-text:../../../html/templates/searchItem.html";
 
 import { SearchBoxView } from "../../components/searchBox/searchBox.view";
 import { PanelViewBase } from "../../modules/viewModule";
 import { SearchPanelPresenter } from "./search.presenter";
+import { DateUtils } from "../../utils/dateUtils";
 
 class SearchPanelView extends PanelViewBase {
     constructor() {
@@ -54,8 +56,9 @@ class SearchPanelView extends PanelViewBase {
     }
 
     setSearchResultData(searchResultList) {
+        this._searchResultContainer.innerHTML = '';
         for(const searchItem of searchResultList) {
-            this._searchResultContainer.insertAdjacentHTML('beforeend', this._getHtmlForSearchItem(searchItem));
+            this._searchResultContainer.appendChild(this._getSearchItemElement(searchItem));
         }
     }
 
@@ -79,55 +82,35 @@ class SearchPanelView extends PanelViewBase {
         }
     }
 
-    _getHtmlForSearchItem(searchItem) {
-        // Fill it up later;
-        return `
-            <li class="search-result-item" data-index="${searchItem.id}">
-                <div class="container--bus-general-details">
-                    <p class="bus-name">${searchItem.busName}</p>
-                    <p class="bus-seat-config-name">${searchItem.seatConfigName}</p>
-                    <div class="container--bus-rating-review">
-                        <div class="container--bus-rating">
-                            <ion-icon name="star"></ion-icon>
-                            <p class="bus-rating">4.6</p>
-                        </div>
-                        <div class="container--bus-reviews">
-                            <ion-icon class="bus-rating-icon" name="people-outline"></ion-icon>
-                            <p class="bus-reviews">${searchItem.totalReviews}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="container--bus-time-details">
-                    <p class="trip-duration">09h 45m</p>
-                    <p class="container--boarding-time">
-                        <span class="container--location-icon">
-                            <ion-icon class="location-icon" name="ellipse-outline"></ion-icon>
-                        </span>
-                        <span class="boarding-time">22:30</span>
-                    </p>
-                    <p class="container--dropping-time">
-                        <span class="container--location-icon">
-                            <ion-icon class="location-icon" name="ellipse-outline"></ion-icon>
-                        </span>
-                        <span class="dropping-time">08:25</span>
-                        <span class="dropping-days">+9</span>
-                    </p>
-                    <p class="boarding-location">Kolkata</p>
-                    <p class="dropping-location">Tenzing Norgay Bus Terminus</p>
-                </div>
-                <div class="container--bus-seat-cost">
-                    <p>Starts from</p>
-                    <p><span class="seat-cost-currency">INR</span> <span class="bus-seat-cost">1200</span></p>
-                </div>
-                <div class="container--bus-seat-available">
-                    <span class="bus-seat-available">12</span> seats available
-                </div>
-                <div>
-                    <button class="btn--view-seats">
-                        View Seats
-                    </button>
-                </div>
-            </li>`;
+    _getSearchItemElement(searchItem) {
+        if(!SearchPanelView._searchItemTemplate) {
+            const template = document.createElement('template');
+            template.innerHTML = searchItemTemplate.trim();
+            SearchPanelView._searchItemTemplate = template;
+        }
+
+        const itemContainer = SearchPanelView._searchItemTemplate.content.cloneNode(true);
+
+        itemContainer.querySelector('.search-result-item').dataset.index = searchItem.id;
+        itemContainer.querySelector('.bus-name').textContent = searchItem.name;
+        itemContainer.querySelector('.bus-seat-config-name').textContent = searchItem.seatConfigName;
+        itemContainer.querySelector('.bus-rating').textContent = searchItem.rating;
+        itemContainer.querySelector('.bus-reviews').textContent = searchItem.reviews;
+        itemContainer.querySelector('.boarding-time').textContent = DateUtils.getHourMinStringFromDateISO(searchItem.boardingTime);
+        itemContainer.querySelector('.dropping-time').textContent = DateUtils.getHourMinStringFromDateISO(searchItem.droppingTime);
+        itemContainer.querySelector('.boarding-location').textContent = searchItem.boardingPoint;
+        itemContainer.querySelector('.dropping-location').textContent = searchItem.droppingPoint;
+        itemContainer.querySelector('.bus-seat-cost').textContent = searchItem.minCost;
+        itemContainer.querySelector('.bus-seat-available').textContent = searchItem.availableSeat;
+        itemContainer.querySelector('.trip-duration').textContent = DateUtils.getDifferenceStringForDateISO(searchItem.boardingTime, searchItem.droppingTime);
+
+        
+        const dayDiff = DateUtils.getDaysDifferenceForDateISO(searchItem.boardingTime, searchItem.droppingTime);
+        if(dayDiff !== 0) {
+            itemContainer.querySelector('.dropping-days').textContent = `+${dayDiff}`;
+        }
+
+        return itemContainer;
     }
 }
 

@@ -1,5 +1,6 @@
 import { SearchPanelView } from "./search.view";
 import { router } from "../../modules/routeModule";
+import { FetchUtils } from "../../utils/fetchUtils";
 
 class SearchPanelPresenter {
 
@@ -30,20 +31,11 @@ class SearchPanelPresenter {
         });
     }
 
-    //Work under process
     async initSearchResult() {
-        const { boardingPoint, droppingPoint, boardingDate } = this._view.searchData;
-        const data  = await this._getDataForSearchParam();
+        const { boardingPoint, droppingPoint, boardingDate } = router.queryParams;
+        this._view.searchData = { boardingPoint, droppingPoint, boardingDate };
+        const data  = await FetchUtils.fetchListOfBusDetails(boardingPoint, droppingPoint, boardingDate);
         this._view.setSearchResultData(data);
-    }
-
-    //Work in process
-    async _getDataForSearchParam() {
-        const data = []
-        for(let i=1; i<=20; i++) {
-            data.push({id : i, busName : 'Green View', seatConfigName : 'Volvo 9090 2+1 (seater+sleeper)', totalReviews: 4500});
-        }
-        return data;
     }
 }
 
