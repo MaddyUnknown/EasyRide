@@ -1,0 +1,36 @@
+:root {
+    --primary-color : #5D6AB3;
+
+    --primary-color-shade1 : #545fa1;
+    --primary-color-shade5 : #2f355a;
+    --primary-color-shade7 : #1c2036;
+    --primary-color-shade9 : #eff0f7;
+
+    --primary-color-tint4 : #9ea6d1;
+
+    --background-color : #fff;
+
+    --white-color : #fff;
+    --light-grey : #DDDDDD;
+    --dark-grey : #767676;
+    --black-color : #000;
+
+    --application-red : #EE0000;
+
+    --message-success--dark : #588B3F;
+    --message-success--light : #78A165;
+    --message-success--btn-close : #a3d18d;
+    --message-success--background : #F1F8F1;
+
+    --message-error--dark : #B1312B;
+    --message-error--light : #CC7573;
+    --message-error--btn-close : #E6B4AE;
+    --message-error--background : #FEF3F7;
+
+    --message-warning--dark : #DF8B12;
+    --message-warning--light : #ECB971;
+    --message-warning--btn-close : #FBD64D;
+    --message-warning--background : #FFFFF3;
+
+    --transition-time : 0.3s;
+}

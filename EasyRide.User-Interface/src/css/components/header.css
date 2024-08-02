@@ -1,0 +1,42 @@
+.section--header {
+    margin : 2.4rem 0 4.8rem 0; 
+}
+
+.container--header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.container--header .logo {
+    width: 16rem;
+}
+
+.nav--header>ul {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5.2rem;
+    
+    list-style: none;
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.container--user-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.user-profile-pic {
+    height: 5rem;
+    border-radius: 50%;
+    border: 0.2rem solid transparent;
+    transition: all var(--transition-time);
+}
+
+.container--user-profile:hover .user-profile-pic {
+    border: 0.2rem solid var(--primary-color);
+    filter: brightness(90%);
+}
