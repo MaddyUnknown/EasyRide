@@ -1,6 +1,7 @@
 import { ViewBase } from "../../modules/viewModule";
 import { InvalidArgumentError } from "../../modules/errorModule";
 import { SearchBoxPresenter } from "./searchBox.presenter";
+import  { Animation } from "../../modules/animationModule";
 
 class SearchBoxView extends ViewBase {
     constructor() {
@@ -91,8 +92,7 @@ class SearchBoxView extends ViewBase {
 
     $animateErrorsShake() {
         this._errorContainers.forEach(container => {
-            container.classList.add('shake-animation');
-            setTimeout(() => container.classList.remove('shake-animation'), 600);
+            Animation.animateShake(container);
         });
     }
 

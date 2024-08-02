@@ -5,6 +5,7 @@ import { SearchBoxView } from "../../components/searchBox/searchBox.view";
 import { PanelViewBase } from "../../modules/viewModule";
 import { SearchPanelPresenter } from "./search.presenter";
 import { DateUtils } from "../../utils/dateUtils";
+import { Animation } from "../../modules/animationModule";
 
 class SearchPanelView extends PanelViewBase {
     constructor() {
@@ -25,7 +26,8 @@ class SearchPanelView extends PanelViewBase {
     }
 
     init() {
-        this._searchResultContainer = document.querySelector('.search-result-list');
+        this._searchResultContainer = document.querySelector('.section--search-result');
+        this._searchResultList = this._searchResultContainer.querySelector('.search-result-list');
         this._resolveFilterSectionScrollVisibality();
         
         this._addFilterSectionResizeHandler();
@@ -56,9 +58,20 @@ class SearchPanelView extends PanelViewBase {
     }
 
     setSearchResultData(searchResultList) {
-        this._searchResultContainer.innerHTML = '';
+        this._searchResultList.innerHTML = '';
         for(const searchItem of searchResultList) {
-            this._searchResultContainer.appendChild(this._getSearchItemElement(searchItem));
+            this._searchResultList.appendChild(this._getSearchItemElement(searchItem));
+        }
+    }
+
+    addLoadingAnimationToSearchResult() {
+        this._stopSearchLoadingAnimation = Animation.animateRippleLoading(this._searchResultContainer);
+    }
+
+    removeLoadingAnimationFromSearchResult() {
+        if(this._stopSearchLoadingAnimation) {
+            this._stopSearchLoadingAnimation();
+            this._searchLoadingAnimation = undefined;
         }
     }
 

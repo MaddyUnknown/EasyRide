@@ -34,8 +34,11 @@ class SearchPanelPresenter {
     async initSearchResult() {
         const { boardingPoint, droppingPoint, boardingDate } = router.queryParams;
         this._view.searchData = { boardingPoint, droppingPoint, boardingDate };
+
+        this._view.addLoadingAnimationToSearchResult();
         const data  = await FetchUtils.fetchListOfBusDetails(boardingPoint, droppingPoint, boardingDate);
         this._view.setSearchResultData(data);
+        this._view.removeLoadingAnimationFromSearchResult();
     }
 }
 

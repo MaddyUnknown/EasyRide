@@ -812,3 +812,84 @@ body {
         transform: translateX(4px);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--background-color);
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity var(--transition-time);
+  }
+
+  .loading-overlay.show {
+    opacity: 1;
+  }
+
+  .lds-ripple {
+    margin: 0.3rem auto 0 auto;
+    color: var(--primary-color-shade1);
+  }
+  .lds-ripple,
+  .lds-ripple div {
+    box-sizing: border-box;
+  }
+  .lds-ripple {
+    position: relative;
+    width: 5.2rem;
+    height: 5.2rem;
+  }
+  .lds-ripple div {
+    position: absolute;
+    border: 0.3rem solid currentColor;
+    opacity: 1;
+    border-radius: 50%;
+    animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+  }
+  .lds-ripple div:nth-child(2) {
+    animation-delay: -0.5s;
+  }
+  @keyframes lds-ripple {
+    0% {
+      top: 2.34rem;
+      left: 2.34rem;
+      width: 0.52rem;
+      height: 0.52rem;
+      opacity: 0;
+    }
+    4.9% {
+      top: 2.34rem;
+      left: 2.34rem;
+      width: 0.52rem;
+      height: 0.52rem;
+      opacity: 0;
+    }
+    5% {
+      top: 2.34rem;
+      left: 2.34rem;
+      width: 0.52rem;
+      height: 0.52rem;
+      opacity: 1;
+    }
+    100% {
+      top: 0;
+      left: 0;
+      width: 5.2rem;
+      height: 5.2rem;
+      opacity: 0;
+    }
+  }
