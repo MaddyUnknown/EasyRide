@@ -11,50 +11,50 @@
     box-shadow: 0 1.2rem 4.8rem rgba(0, 0, 0, 0.075);
 }
 
-.container--bus-general-details {
+.search-result-item .container--bus-general-details {
     width: 32%;
 }
 
-.container--bus-time-details {
+.search-result-item .container--bus-time-details {
     width: 42%;
 }
 
-.container--bus-seat-cost {
+.search-result-item .container--bus-seat-cost {
     width: 11%;
 }
 
-.container--bus-seat-available {
+.search-result-item .container--bus-seat-available {
     width: 15%;
 }
 
 /* BUS GENERAL DETAILS */
 
-.bus-name {
+.search-result-item .bus-name {
     margin-bottom: 0.4rem;
     font-size: 2rem;
     font-weight: 600;
 }
 
-.bus-seat-config-name {
+.search-result-item .bus-seat-config-name {
     margin-bottom: 1.2rem;
     color: var(--dark-grey);
     font-size: 1.4rem;
 }
 
-.container--bus-rating-review {
+.search-result-item .container--bus-rating-review {
     display: flex;
     gap: 2.4rem;
 }
 
 /* BUS RATING */
 
-.container--bus-rating, .container--bus-reviews {
+.search-result-item .container--bus-rating, .container--bus-reviews {
     display: flex;
     align-items: center;
     gap: 0.4rem;
 }
 
-.container--bus-rating {
+.search-result-item .container--bus-rating {
     padding: 0.2rem 0.8rem 0.2rem 0.5rem;
 
     color: var(--white-color);
@@ -65,13 +65,13 @@
     font-size: 1.2rem;
 }
 
-.container--bus-reviews {
+.search-result-item .container--bus-reviews {
     font-size: 1.4rem;
 }
 
 /* TRIP DETAILS */
 
-.container--bus-time-details {
+.search-result-item .container--bus-time-details {
     position: relative;
     display: grid;
     grid-template-columns: 1fr 3fr;
@@ -80,7 +80,7 @@
     align-items: center;
 }
 
-.container--bus-time-details::before {
+.search-result-item .container--bus-time-details::before {
     position: absolute;
     left: 0.8rem;
     content: "";
@@ -90,7 +90,7 @@
     background-color: var(--primary-color);
 }
 
-.trip-duration {
+.search-result-item .trip-duration {
     position: absolute;
     left: 1.2rem;
     transform: translate(-50%);
@@ -100,11 +100,11 @@
     font-size: 1.4rem;  
 }
 
-.container--dropping-time {
+.search-result-item .container--dropping-time {
     grid-row: 2;
 }
 
-.container--boarding-time, .container--dropping-time {
+.search-result-item .container--boarding-time, .container--dropping-time {
     position: relative;
     display: flex;
     gap: 1.2rem;
@@ -113,11 +113,11 @@
     font-size: 1.8rem;
 }
 
-.container--boarding-time {
+.search-result-item .container--boarding-time {
     font-weight: 600;
 }
 
-.container--location-icon {
+.search-result-item .container--location-icon {
     left: -2.4rem;
     
     display: flex;
@@ -127,21 +127,21 @@
     color: var(--primary-color);
 }
 
-.location-icon {
+.search-result-item .location-icon {
     background-color: var(--background-color);
 }
 
-.boarding-location, .dropping-location {
+.search-result-item .boarding-location, .dropping-location {
     color: var(--dark-grey);
     font-size: 1.4rem;
 }
 
-.container--bus-seat-cost {
+.search-result-item .container--bus-seat-cost {
     color: var(--dark-grey);
     font-size: 1.4rem;
 }
 
-.dropping-days {
+.search-result-item .dropping-days {
     position: absolute;
     right: -2rem;
     top : -0.4rem;
@@ -155,29 +155,29 @@
 
 /* BUS SEAT COST */
 
-.seat-cost-currency, .bus-seat-cost {
+.search-result-item .seat-cost-currency, .bus-seat-cost {
     color: var(--black-color);
 }
 
-.bus-seat-cost {
+.search-result-item .bus-seat-cost {
     font-size: 1.6rem;
     font-weight: 600;
 }
 
 /* BUS SEAT AVAILABLE */
 
-.container--bus-seat-available {
+.search-result-item .container--bus-seat-available {
     text-align: end;
     color: var(--dark-grey);
     font-size: 1.4rem;
 }
 
-.bus-seat-available {
+.search-result-item .bus-seat-available {
     color: var(--black-color);
     font-weight: 600;
 }
 
-.btn--view-seats, .btn--view-seats:visited {
+.search-result-item .btn--view-seats, .btn--view-seats:visited {
     cursor: pointer;
 
     position: absolute;
@@ -197,6 +197,6 @@
     transition: all var(--transition-time);
 }
 
-.btn--view-seats:hover, .btn--view-seats:active {
+.search-result-item .btn--view-seats:hover, .btn--view-seats:active {
     background-color: var(--primary-color-shade1);
 }

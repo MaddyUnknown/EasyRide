@@ -1,9 +1,9 @@
-.section--search-bar {
+.panel--search .section--search-bar {
     margin-bottom: 3.2rem;
 }
 
 
-.container--search-panel-main {
+.panel--search .container--search-panel-main {
     position: relative;
 
     display: flex;
@@ -11,24 +11,24 @@
     gap: 1.4rem;
 }
 
-.section--filters {
+.panel--search .section--filters {
     position: sticky;
     top: 1.2rem;
     width: 15%;
 }
 
-.scrollable {
+.panel--search .scrollable {
     max-height: 100vh;
     overflow-y: scroll;
 }
 
-.section--search-result {
+.panel--search .section--search-result {
     width: 85%;
 }
 
 /********** SEARCH FILTER **********/
 
-.header--filter {
+.panel--search .header--filter {
     display: flex;
     gap: 1.2rem;
     align-items: end;
@@ -41,7 +41,7 @@
     text-transform: uppercase;
 }
 
-.btn--filter-reset, .btn--filter-reset:visited {
+.panel--search .btn--filter-reset, .btn--filter-reset:visited {
     cursor: pointer;
 
     color: var(--primary-color);
@@ -50,22 +50,22 @@
     transition: all var(--transition-time);
 }
 
-.btn--filter-reset:hover, .btn--filter-reset:active {
+.panel--search .btn--filter-reset:hover, .btn--filter-reset:active {
     color: var(--primary-color-shade1);
 }
 
-.filter-section {
+.panel--search .filter-section {
     margin-bottom: 3.2rem;
 }
 
-.filter-heading {
+.panel--search .filter-heading {
     margin-bottom: 1.2rem;
 
     font-size: 1.4rem;
     font-weight: 600;
 }
 
-.filter-check-list {
+.panel--search .filter-check-list {
     display: flex;
     flex-direction: column;
     gap: 1.2rem;
@@ -75,7 +75,7 @@
     font-size: 1.4rem;
 }
 
-.filter-check-item {
+.panel--search .filter-check-item {
     display: flex;
     align-items: center;
     gap: 0.8rem;
@@ -83,7 +83,7 @@
 }
 
 /********** SEARCH RESULT **********/
-.search-result-list {
+.panel--search .search-result-list {
     display: flex;
     flex-direction: column;
     gap: 1.2rem;

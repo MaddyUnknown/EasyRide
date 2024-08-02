@@ -1,4 +1,4 @@
-.form--search-bar {
+.component--search-bar .form--search-bar {
     position: relative;
     display: grid;
     grid-template-columns: 1.6fr 1.6fr 1fr 1fr;
@@ -11,21 +11,21 @@
     box-shadow: inset 0 0 0 0.1rem var(--light-grey);
 }
 
-.form-group {
+.component--search-bar .form-group {
     position: relative;
     display: flex;
     flex-direction: column;
     padding: 0.8rem 0 0.4rem;
 }
 
-.form--search-bar label {
+.component--search-bar .form--search-bar label {
     font-size: 1.4rem;
     margin: 0 0 0.4rem 0.1rem;
     color: var(--dark-grey);
 }
 
 
-.form--search-bar input {
+.component--search-bar .form--search-bar input {
     display: block;
     color: inherit;
     font-family: inherit;
@@ -41,18 +41,18 @@
     transition: all var(--transition-time);
 }
 
-.form--search-bar input:focus {
+.component--search-bar .form--search-bar input:focus {
     outline: none;
     border-bottom: 0.2rem solid var(--primary-color);
 }
 
-.form--search-bar .btn--search ion-icon {
+.component--search-bar .form--search-bar .btn--search ion-icon {
     height: 1.8rem;
     width: 1.8rem;
     --ionicon-stroke-width: 6.2rem;
 }
 
-.form--search-bar .btn--search, .form--search-bar .btn--search:visited {
+.component--search-bar .form--search-bar .btn--search, .form--search-bar .btn--search:visited {
     cursor: pointer;
 
     display: flex;
@@ -76,11 +76,11 @@
     font-size: 1.6rem;
 }
 
-.form--search-bar .btn--search:hover, .form--search-bar .btn--search:active {
+.component--search-bar .form--search-bar .btn--search:hover, .form--search-bar .btn--search:active {
     background-color: var(--primary-color-shade1);
 }
 
-.form-group--dropping-point::after, .form-group--boarding::after {
+.component--search-bar .form-group--dropping-point::after, .form-group--boarding::after {
     position: absolute;
     display: block;
     top: 10%;
@@ -91,7 +91,7 @@
     background-color: var(--light-grey);
 }
 
-.btn--toggle-src-dest {
+.component--search-bar .btn--toggle-src-dest {
     cursor: pointer;
     position: absolute;
     
@@ -114,7 +114,7 @@
     z-index: 2;
 }
 
-.btn--toggle-src-dest > ion-icon {
+.component--search-bar .btn--toggle-src-dest > ion-icon {
     height: 1.6rem;
     width: 1.6rem;
     --ionicon-stroke-width: 3rem;
