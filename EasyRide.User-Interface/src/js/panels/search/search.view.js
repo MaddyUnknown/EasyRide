@@ -30,6 +30,8 @@ class SearchPanelView extends PanelViewBase {
         this._searchResultContainer = this._container.querySelector('.section--search-result');
         this._searchResultMessageContainer = this._container.querySelector('.search-result-message');
         this._searchResultList = this._searchResultContainer.querySelector('.search-result-list');
+        this._busSeatSelectorContainer = this._container.querySelector('.overlay--bus-seat-selection');
+
         this._resolveFilterSectionScrollVisibality();
         
         this._addFilterSectionResizeHandler();

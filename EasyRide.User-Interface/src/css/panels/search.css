@@ -94,3 +94,65 @@
     font-size: 1.4rem;
     color: var(--dark-grey);
 }
+
+/********** SEAT SELECTOR OVERLAY **********/
+.panel--search .overlay--bus-seat-selection {
+    /* pointer-events: none; */
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    top : 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: var(--overlay-color);
+    opacity: 1;
+}
+
+.panel--search .overlay--bus-seat-selection.show {
+    pointer-events: auto;
+    opacity: 1;
+}
+
+.panel--search .bus-seat-selection {
+    width: 100%;
+    max-width: 100rem;
+    margin: 2.4rem;
+    padding: 1.6rem 2.4rem;
+    border-radius: 0.4rem;
+    background-color: var(--background-color);
+}
+
+.panel--search .bus-seat-selection-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.4rem;
+}
+
+.panel--search .bus-seat-selection-header {
+    font-size: 2rem;
+}
+
+.panel--search .btn--close-bus-seat-selection {
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0;
+    padding: 0;
+    border: none;
+    background-color: inherit;
+
+    font-size: 1.8rem;
+
+    transition: all var(--transition-time);
+}
+
+.panel--search .btn--close-bus-seat-selection > ion-icon {
+    --ionicon-stroke-width : 3.6rem;
+}

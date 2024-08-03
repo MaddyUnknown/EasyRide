@@ -15,6 +15,8 @@
     --dark-grey : #767676;
     --black-color : #000;
 
+    --overlay-color : rgb(0, 0, 0, 0.75);
+
     --application-red : #EE0000;
 
     --message-success--dark : #588B3F;
