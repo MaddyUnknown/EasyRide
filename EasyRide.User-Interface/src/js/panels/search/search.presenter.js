@@ -1,6 +1,7 @@
 import { SearchPanelView } from "./search.view";
 import { router } from "../../modules/routeModule";
 import { FetchUtils } from "../../utils/fetchUtils";
+import { messageInfoComponent } from "../../modules/viewModule";
 
 class SearchPanelPresenter {
 
@@ -33,11 +34,22 @@ class SearchPanelPresenter {
 
     async initSearchResult() {
         const { boardingPoint, droppingPoint, boardingDate } = router.queryParams;
-        this._view.searchData = { boardingPoint, droppingPoint, boardingDate };
+        
+        if(!boardingPoint || !droppingPoint || !boardingDate) {
+            return;
+        }
+        
+        try {
+            this._view.searchData = { boardingPoint, droppingPoint, boardingDate };
+            this._view.addLoadingAnimationToSearchResult();
+            const data  = await FetchUtils.fetchListOfBusDetails(boardingPoint, droppingPoint, boardingDate);
+            this._view.setSearchResultData(data);
+            this._view.removeLoadingAnimationFromSearchResult();
+        } catch(ex) {
+            console.error(ex);
+            messageInfoComponent.addErrorMessage('Error while getting bus details');
+        }
 
-        this._view.addLoadingAnimationToSearchResult();
-        const data  = await FetchUtils.fetchListOfBusDetails(boardingPoint, droppingPoint, boardingDate);
-        this._view.setSearchResultData(data);
         this._view.removeLoadingAnimationFromSearchResult();
     }
 }

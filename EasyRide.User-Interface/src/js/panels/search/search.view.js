@@ -26,7 +26,9 @@ class SearchPanelView extends PanelViewBase {
     }
 
     init() {
-        this._searchResultContainer = document.querySelector('.section--search-result');
+        this._container = document.querySelector('.panel--search');
+        this._searchResultContainer = this._container.querySelector('.section--search-result');
+        this._searchResultMessageContainer = this._container.querySelector('.search-result-message');
         this._searchResultList = this._searchResultContainer.querySelector('.search-result-list');
         this._resolveFilterSectionScrollVisibality();
         
@@ -59,8 +61,14 @@ class SearchPanelView extends PanelViewBase {
 
     setSearchResultData(searchResultList) {
         this._searchResultList.innerHTML = '';
-        for(const searchItem of searchResultList) {
-            this._searchResultList.appendChild(this._getSearchItemElement(searchItem));
+        if(searchResultList.length === 0) {
+            this._searchResultMessageContainer.textContent = 'No bus available!';
+            return;
+        } else {
+            this._searchResultMessageContainer.textContent = '';
+            for(const searchItem of searchResultList) {
+                this._searchResultList.appendChild(this._getSearchItemElement(searchItem));
+            }
         }
     }
 

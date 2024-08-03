@@ -88,3 +88,9 @@
     flex-direction: column;
     gap: 1.2rem;
 }
+
+.panel--search .search-result-message {
+    text-align: center;
+    font-size: 1.4rem;
+    color: var(--dark-grey);
+}
