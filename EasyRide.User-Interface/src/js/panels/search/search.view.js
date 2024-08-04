@@ -2,6 +2,7 @@ import html from "bundle-text:../../../html/search.html";
 import searchItemTemplate from "bundle-text:../../../html/templates/searchItem.html";
 
 import { SearchBoxView } from "../../components/searchBox/searchBox.view";
+import { BusSeatConfigView } from "../../components/busSeatConfig/busSeatConfig.view";
 import { PanelViewBase } from "../../modules/viewModule";
 import { SearchPanelPresenter } from "./search.presenter";
 import { DateUtils } from "../../utils/dateUtils";
@@ -12,6 +13,7 @@ class SearchPanelView extends PanelViewBase {
         super();
         this._presenter = new SearchPanelPresenter(this);
         this._searchBox = new SearchBoxView();
+        this._busSeatConfig = new BusSeatConfigView();
     }
 
     static get $PANEL_TEMPLATE() {
@@ -36,11 +38,13 @@ class SearchPanelView extends PanelViewBase {
         
         this._addFilterSectionResizeHandler();
         this._searchBox.init();
+        this._busSeatConfig.init();
         this._presenter.init();
     }
 
     destroy() {
         this._presenter.destroy();
+        this._busSeatConfig.destroy();
         this._searchBox.destroy();
         this._removeFilterSectionResizeHandler();
     }

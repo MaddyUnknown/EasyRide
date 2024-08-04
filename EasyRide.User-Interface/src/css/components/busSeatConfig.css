@@ -1,0 +1,9 @@
+.component--bus-seat-config.scrollable {
+    padding-bottom: 4px;
+    overflow-x: scroll;
+}
+
+.component--bus-seat-config canvas {
+    border: 0.1rem solid var(--light-grey);
+    border-radius: 0.8rem;
+}
