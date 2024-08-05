@@ -21,23 +21,48 @@ class BusSeatConfigView extends ViewBase {
         this._canvas = this._container.querySelector('canvas');
     }
 
-    setConfigData(data) {
-        const ctx = this._canvas.getContext('2d');
-        for(const coord of data) {
-            const x = 45*coord.X + 15, y = 45*coord.Y + 15;
-            if(coord.type === 'seater') {
-                const boxWidth = 35, boxHeight = 35;
-                this._renderNormalSeat(ctx, x, y, boxWidth, boxHeight, '#5D6AB3', 'rgb(255, 255, 255)');
-            } else if(coord.type === 'sleeper') {
-                const boxWidth = 35, boxHeight = 80;
-                this._renderSleaperSeat(ctx, x, y, boxWidth, boxHeight, '#5D6AB3', 'rgb(255, 255, 255)');
-            }
+    setSeatConfig(data) {
+        this._container.innerHTML = '';
+        
+        const zValues = data.reduce((acc, item) => {
+            if(acc.findIndex(i => i === item.Z) === -1) acc.push(item.Z); 
+            return acc;
+        }, []).sort((a, b) => a-b);
 
+        //For width and heigh on the last element this will not work. TO-DO fix for the same
+        const maxX = Math.max(...data.map(item => item.X)), maxY = Math.max(...data.map(item => item.Y));
+
+        for(const z of zValues) {
+            this._createSeatConfigCanvas(data.filter(index => index.Z === z), maxX, maxY, z);
         }
     }
 
+    _createSeatConfigCanvas(data, maxXIndex, maxYIndex, zIndex) {
+        console.log(data);
+        const canvas = document.createElement('canvas');
+        canvas.width = (maxXIndex+1)*BusSeatConfigViewDimentions.GRID_WIDTH + BusSeatConfigViewDimentions.CANVAS_PADDING_X*2; 
+        canvas.height = (maxYIndex+2)*BusSeatConfigViewDimentions.GRID_HEIGHT + BusSeatConfigViewDimentions.CANVAS_PADDING_Y*2 + BusSeatConfigViewDimentions.BUS_DRIVER_Y_PADDING; // + 2 for driver seat
+        canvas.dataset.zIndex = zIndex;
+
+        const ctx = canvas.getContext('2d');
+        for(const coord of data) {
+            const seatX = coord.X*BusSeatConfigViewDimentions.GRID_WIDTH + BusSeatConfigViewDimentions.CANVAS_PADDING_X;
+            const seatY = (maxYIndex-coord.Y-(coord.height?coord.height-1:0))*BusSeatConfigViewDimentions.GRID_HEIGHT + BusSeatConfigViewDimentions.CANVAS_PADDING_Y;
+            const boxWidth = (coord.width??1)*BusSeatConfigViewDimentions.GRID_WIDTH, boxHeight = (coord.height??1)*BusSeatConfigViewDimentions.GRID_HEIGHT;
+            console.log(boxHeight);
+            if(coord.type === 'seater') {
+                console.log('here');
+                this._renderNormalSeat(ctx, seatX, seatY, boxWidth, boxHeight, '#5D6AB3', 'rgb(255, 255, 255)');
+            } else if(coord.type === 'sleeper') {
+                this._renderSleaperSeat(ctx, seatX, seatY, boxWidth, boxHeight, '#5D6AB3', 'rgb(255, 255, 255)');
+            }
+        }
+
+        this._container.appendChild(canvas);
+    }
+
     _renderNormalSeat(ctx, x, y, boxWidth, boxHeight, lineColor, fillColor) {
-        const size = Math.min(boxWidth, boxHeight, 30);
+        const size = Math.min(boxWidth, boxHeight)*0.7;
         const seatRadius = 0.1*size;
         const seatWidth = size, seatHeight = 0.63*size;
         const seatX = x + (boxWidth-size)/2, seatY = y + (boxHeight-size)/2 + size - seatHeight;
@@ -48,6 +73,8 @@ class BusSeatConfigView extends ViewBase {
         
         ctx.strokeStyle = lineColor;
         ctx.fillStyle = fillColor;
+
+        //ctx.strokeRect(x, y, boxWidth, boxHeight);
 
         ctx.beginPath();
         ctx.moveTo(seatX+seatRadius, seatY);
@@ -79,8 +106,8 @@ class BusSeatConfigView extends ViewBase {
     }
 
     _renderSleaperSeat(ctx, x, y, boxWidth, boxHeight, lineColor, fillColor) {
-        const bedWidth = Math.min(boxWidth, 30);
-        const bedHeight = Math.min(boxHeight, 60);
+        const bedHeight = boxHeight*0.7;
+        const bedWidth = boxWidth/2;
         const bedX = x + (boxWidth-bedWidth)/2, bedY = y + (boxHeight-bedHeight)/2;
         const bedRadius = 0.17*bedWidth;
         
@@ -92,6 +119,8 @@ class BusSeatConfigView extends ViewBase {
         
         ctx.strokeStyle = lineColor;
         ctx.fillStyle = fillColor;
+
+        //ctx.strokeRect(x, y, boxWidth, boxHeight);
 
         ctx.beginPath();
         ctx.moveTo(bedX+bedRadius, bedY);
@@ -121,6 +150,14 @@ class BusSeatConfigView extends ViewBase {
         ctx.fill();
         ctx.stroke();
     }
+}
+
+class BusSeatConfigViewDimentions {
+    static GRID_WIDTH = 45;
+    static GRID_HEIGHT = 35;
+    static CANVAS_PADDING_X = 15;
+    static CANVAS_PADDING_Y = 10;
+    static BUS_DRIVER_Y_PADDING = 10;
 }
 
 export { BusSeatConfigView };
