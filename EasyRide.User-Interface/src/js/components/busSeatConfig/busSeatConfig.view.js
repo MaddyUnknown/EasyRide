@@ -1,3 +1,4 @@
+import { debounce, throttle } from "../../utils/commonUtils";
 import { ViewBase } from "./../../modules/viewModule";
 import { BusSeatConfigPresenter } from "./busSeatConfig.presenter";
 
@@ -73,6 +74,8 @@ class BusSeatConfigView extends ViewBase {
         }
 
         canvas.addEventListener('click', this._canvasClickHandler.bind(this));
+        canvas.addEventListener('mousemove', throttle(this._canvasHoverHandler.bind(this), 10).bind(this));
+
 
         return deckConfig;
     }
@@ -178,7 +181,7 @@ class BusSeatConfigView extends ViewBase {
         if(!deckConfig) {
             return;
         }
-        ;
+        
         const mousePos = {
             x: e.clientX - canvas.offsetLeft,
             y: e.clientY - canvas.offsetTop
@@ -194,6 +197,34 @@ class BusSeatConfigView extends ViewBase {
             console.log(`Not in z map`);
         }
     }
+
+     _canvasHoverHandler(e) {
+        const canvas = e.target.closest('.component--bus-seat-config canvas');
+        if(!canvas) {
+            return;
+        }
+        
+
+        const deckConfig = this._deckConfigMap?.get(canvas.dataset.zIndex);
+        if(!deckConfig) {
+            return;
+        }
+        
+        const mousePos = {
+            x: e.clientX - canvas.offsetLeft,
+            y: e.clientY - canvas.offsetTop
+        };
+
+        const ctx = deckConfig.hitCanvas.getContext('2d');
+        const pixel = ctx.getImageData(mousePos.x, mousePos.y, 1, 1).data;
+        const color = `rgb(${pixel[0]},${pixel[1]},${pixel[2]})`;
+
+        if(color !== deckConfig.hitCanvasBackgroundColor) {
+            canvas.style.cursor = 'pointer';
+        } else {
+            canvas.style.cursor = 'default';
+        }
+     }
 }
 
 class BusSeatConfigViewConfig {
