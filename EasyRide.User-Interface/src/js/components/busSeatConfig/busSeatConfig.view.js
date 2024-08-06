@@ -8,21 +8,22 @@ class BusSeatConfigView extends ViewBase {
     }
 
     init() {
-        this._initCanvas();
+        this._initElements();
         this._presenter.init();
     }
 
     destroy() {
         this._presenter.init();
+        this._container = undefined;
     }
 
-    _initCanvas() {
+    _initElements() {
         this._container = document.querySelector('.component--bus-seat-config');
-        this._canvas = this._container.querySelector('canvas');
     }
 
     setSeatConfig(data) {
         this._container.innerHTML = '';
+        this._deckConfigMap = new Map();
         
         const zValues = data.reduce((acc, item) => {
             if(acc.findIndex(i => i === item.Z) === -1) acc.push(item.Z); 
@@ -33,32 +34,47 @@ class BusSeatConfigView extends ViewBase {
         const maxX = Math.max(...data.map(item => item.X)), maxY = Math.max(...data.map(item => item.Y));
 
         for(const z of zValues) {
-            this._createSeatConfigCanvas(data.filter(index => index.Z === z), maxX, maxY, z);
+            const deckConfig = this._createDeckConfig(data.filter(index => index.Z === z), maxX, maxY, z);
+            this._deckConfigMap.set(z.toString(), deckConfig);
+            this._container.appendChild(deckConfig.displayCanvas);
         }
     }
 
-    _createSeatConfigCanvas(data, maxXIndex, maxYIndex, zIndex) {
-        console.log(data);
+    _createDeckConfig(data, maxXIndex, maxYIndex, zIndex) {
         const canvas = document.createElement('canvas');
-        canvas.width = (maxXIndex+1)*BusSeatConfigViewDimentions.GRID_WIDTH + BusSeatConfigViewDimentions.CANVAS_PADDING_X*2; 
-        canvas.height = (maxYIndex+2)*BusSeatConfigViewDimentions.GRID_HEIGHT + BusSeatConfigViewDimentions.CANVAS_PADDING_Y*2 + BusSeatConfigViewDimentions.BUS_DRIVER_Y_PADDING; // + 2 for driver seat
+        const hitCanvas = document.createElement('canvas');
+        const colorIterator = generateDistinctRgbColors(1000);
+        const deckConfig = { hitCanvas, displayCanvas : canvas, hitColorMap : new Map()};
+
+        canvas.width = hitCanvas.width = (maxXIndex+1)*BusSeatConfigViewConfig.GRID_WIDTH + BusSeatConfigViewConfig.CANVAS_PADDING_X*2; 
+        canvas.height = hitCanvas.height = (maxYIndex+2)*BusSeatConfigViewConfig.GRID_HEIGHT + BusSeatConfigViewConfig.CANVAS_PADDING_Y*2 + BusSeatConfigViewConfig.BUS_DRIVER_Y_PADDING; // + 2 for driver seat
         canvas.dataset.zIndex = zIndex;
 
         const ctx = canvas.getContext('2d');
-        for(const coord of data) {
-            const seatX = coord.X*BusSeatConfigViewDimentions.GRID_WIDTH + BusSeatConfigViewDimentions.CANVAS_PADDING_X;
-            const seatY = (maxYIndex-coord.Y-(coord.height?coord.height-1:0))*BusSeatConfigViewDimentions.GRID_HEIGHT + BusSeatConfigViewDimentions.CANVAS_PADDING_Y;
-            const boxWidth = (coord.width??1)*BusSeatConfigViewDimentions.GRID_WIDTH, boxHeight = (coord.height??1)*BusSeatConfigViewDimentions.GRID_HEIGHT;
-            console.log(boxHeight);
-            if(coord.type === 'seater') {
-                console.log('here');
+        const hitCtx = hitCanvas.getContext('2d'); 
+        deckConfig.hitCanvasBackgroundColor = hitCtx.fillStyle = colorIterator.next().value;
+        hitCtx.fillRect(0,0, hitCanvas.width, hitCanvas.height);
+
+        for(const seat of data) {
+            const seatX = seat.X*BusSeatConfigViewConfig.GRID_WIDTH + BusSeatConfigViewConfig.CANVAS_PADDING_X;
+            const seatY = (maxYIndex-seat.Y-(seat.height?seat.height-1:0))*BusSeatConfigViewConfig.GRID_HEIGHT + BusSeatConfigViewConfig.CANVAS_PADDING_Y;
+            const boxWidth = (seat.width??1)*BusSeatConfigViewConfig.GRID_WIDTH, boxHeight = (seat.height??1)*BusSeatConfigViewConfig.GRID_HEIGHT;
+            const hitColor = colorIterator.next().value;
+
+            if(seat.type === 'seater') {
                 this._renderNormalSeat(ctx, seatX, seatY, boxWidth, boxHeight, '#5D6AB3', 'rgb(255, 255, 255)');
-            } else if(coord.type === 'sleeper') {
+                this._renderNormalSeat(hitCtx, seatX, seatY, boxWidth, boxHeight, hitColor, hitColor);
+            } else if(seat.type === 'sleeper') {
                 this._renderSleaperSeat(ctx, seatX, seatY, boxWidth, boxHeight, '#5D6AB3', 'rgb(255, 255, 255)');
+                this._renderSleaperSeat(hitCtx, seatX, seatY, boxWidth, boxHeight, hitColor, hitColor);
             }
+
+            deckConfig.hitColorMap.set(hitColor, seat);
         }
 
-        this._container.appendChild(canvas);
+        canvas.addEventListener('click', this._canvasClickHandler.bind(this));
+
+        return deckConfig;
     }
 
     _renderNormalSeat(ctx, x, y, boxWidth, boxHeight, lineColor, fillColor) {
@@ -150,14 +166,59 @@ class BusSeatConfigView extends ViewBase {
         ctx.fill();
         ctx.stroke();
     }
+
+    _canvasClickHandler(e) {
+        const canvas = e.target.closest('.component--bus-seat-config canvas');
+        if(!canvas) {
+            return;
+        }
+        
+
+        const deckConfig = this._deckConfigMap?.get(canvas.dataset.zIndex);
+        if(!deckConfig) {
+            return;
+        }
+        ;
+        const mousePos = {
+            x: e.clientX - canvas.offsetLeft,
+            y: e.clientY - canvas.offsetTop
+        };
+        
+        const ctx = deckConfig.hitCanvas.getContext('2d');
+        const pixel = ctx.getImageData(mousePos.x, mousePos.y, 1, 1).data;
+        const color = `rgb(${pixel[0]},${pixel[1]},${pixel[2]})`;
+
+        if(deckConfig && deckConfig.hitColorMap.has(color)) {
+            console.log(deckConfig.hitColorMap.get(color));
+        } else {
+            console.log(`Not in z map`);
+        }
+    }
 }
 
-class BusSeatConfigViewDimentions {
+class BusSeatConfigViewConfig {
     static GRID_WIDTH = 45;
     static GRID_HEIGHT = 35;
     static CANVAS_PADDING_X = 15;
     static CANVAS_PADDING_Y = 10;
     static BUS_DRIVER_Y_PADDING = 10;
+}
+
+
+function* generateDistinctRgbColors(n) {
+    const step = Math.floor(Math.cbrt(256 ** 3 / n));
+    const totalColors = n;
+    for (let r = 0; r < 256; r += step) {
+        for (let g = 0; g < 256; g += step) {
+            for (let b = 0; b < 256; b += step) {
+                yield `rgb(${r},${g},${b})`;
+                n--;
+                if (n <= 0) {
+                    throw new Error(`${totalColors} colors generated`);
+                }
+            }
+        }
+    }
 }
 
 export { BusSeatConfigView };
