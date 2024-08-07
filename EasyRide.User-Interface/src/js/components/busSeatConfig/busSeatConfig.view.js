@@ -3,6 +3,7 @@ import { ViewBase } from "./../../modules/viewModule";
 import { BusSeatConfigPresenter } from "./busSeatConfig.presenter";
 
 class BusSeatConfigView extends ViewBase {
+
     constructor() {
         super();
         this._presenter = new BusSeatConfigPresenter(this);
@@ -32,49 +33,57 @@ class BusSeatConfigView extends ViewBase {
         }, []).sort((a, b) => a-b);
 
         //For width and heigh on the last element this will not work. TO-DO fix for the same
-        const maxX = Math.max(...data.map(item => item.X)), maxY = Math.max(...data.map(item => item.Y));
+        const maxX = Math.max(...data.map(item => item.X+(item.width?item.width-1:0))), maxY = Math.max(...data.map(item => item.Y+(item.height?item.height-1:0)));
 
         for(const z of zValues) {
             const deckConfig = this._createDeckConfig(data.filter(index => index.Z === z), maxX, maxY, z);
             this._deckConfigMap.set(z.toString(), deckConfig);
             this._container.appendChild(deckConfig.displayCanvas);
+
         }
     }
 
     _createDeckConfig(data, maxXIndex, maxYIndex, zIndex) {
         const canvas = document.createElement('canvas');
         const hitCanvas = document.createElement('canvas');
-        const colorIterator = generateDistinctRgbColors(1000);
-        const deckConfig = { hitCanvas, displayCanvas : canvas, hitColorMap : new Map()};
+        const colorGenerator = new DistinctRGBColorGenerator(500);
+        const deckConfig = { hitCanvas, displayCanvas : canvas, hitColorMap : new Map(), colorGenerator };
 
-        canvas.width = hitCanvas.width = (maxXIndex+1)*BusSeatConfigViewConfig.GRID_WIDTH + BusSeatConfigViewConfig.CANVAS_PADDING_X*2; 
-        canvas.height = hitCanvas.height = (maxYIndex+2)*BusSeatConfigViewConfig.GRID_HEIGHT + BusSeatConfigViewConfig.CANVAS_PADDING_Y*2 + BusSeatConfigViewConfig.BUS_DRIVER_Y_PADDING; // + 2 for driver seat
+        canvas.width = (maxXIndex+1)*BusSeatConfigViewConfig.GRID_WIDTH + BusSeatConfigViewConfig.CANVAS_PADDING_X*2; 
+        canvas.height = (maxYIndex+2)*BusSeatConfigViewConfig.GRID_HEIGHT + BusSeatConfigViewConfig.CANVAS_PADDING_Y*2 + BusSeatConfigViewConfig.BUS_DRIVER_Y_PADDING; // + 2 for driver seat
         canvas.dataset.zIndex = zIndex;
+        hitCanvas.width = canvas.width;
+        hitCanvas.height = canvas.height;
+
 
         const ctx = canvas.getContext('2d');
-        const hitCtx = hitCanvas.getContext('2d'); 
-        deckConfig.hitCanvasBackgroundColor = hitCtx.fillStyle = colorIterator.next().value;
+        const hitCtx = hitCanvas.getContext('2d', { willReadFrequently : true });
+        
+        deckConfig.hitCanvasBackgroundColor = colorGenerator.getNextValue();
+        hitCtx.fillStyle = ColorUtils.rgbStrFromObj(deckConfig.hitCanvasBackgroundColor);
+        hitCtx.lineWidth = 2;
         hitCtx.fillRect(0,0, hitCanvas.width, hitCanvas.height);
 
         for(const seat of data) {
             const seatX = seat.X*BusSeatConfigViewConfig.GRID_WIDTH + BusSeatConfigViewConfig.CANVAS_PADDING_X;
             const seatY = (maxYIndex-seat.Y-(seat.height?seat.height-1:0))*BusSeatConfigViewConfig.GRID_HEIGHT + BusSeatConfigViewConfig.CANVAS_PADDING_Y;
             const boxWidth = (seat.width??1)*BusSeatConfigViewConfig.GRID_WIDTH, boxHeight = (seat.height??1)*BusSeatConfigViewConfig.GRID_HEIGHT;
-            const hitColor = colorIterator.next().value;
+            const hitColor = colorGenerator.getNextValue();
+            const hitColorStr = ColorUtils.rgbStrFromObj(hitColor);
 
             if(seat.type === 'seater') {
                 this._renderNormalSeat(ctx, seatX, seatY, boxWidth, boxHeight, '#5D6AB3', 'rgb(255, 255, 255)');
-                this._renderNormalSeat(hitCtx, seatX, seatY, boxWidth, boxHeight, hitColor, hitColor);
+                this._renderNormalSeat(hitCtx, seatX, seatY, boxWidth, boxHeight, hitColorStr, hitColorStr);
             } else if(seat.type === 'sleeper') {
                 this._renderSleaperSeat(ctx, seatX, seatY, boxWidth, boxHeight, '#5D6AB3', 'rgb(255, 255, 255)');
-                this._renderSleaperSeat(hitCtx, seatX, seatY, boxWidth, boxHeight, hitColor, hitColor);
+                this._renderSleaperSeat(hitCtx, seatX, seatY, boxWidth, boxHeight, hitColorStr, hitColorStr);
             }
 
             deckConfig.hitColorMap.set(hitColor, seat);
         }
 
         canvas.addEventListener('click', this._canvasClickHandler.bind(this));
-        canvas.addEventListener('mousemove', throttle(this._canvasHoverHandler.bind(this), 10).bind(this));
+        canvas.addEventListener('mousemove', throttle(this._canvasHoverHandler.bind(this), 10));
 
 
         return deckConfig;
@@ -189,12 +198,14 @@ class BusSeatConfigView extends ViewBase {
         
         const ctx = deckConfig.hitCanvas.getContext('2d');
         const pixel = ctx.getImageData(mousePos.x, mousePos.y, 1, 1).data;
-        const color = `rgb(${pixel[0]},${pixel[1]},${pixel[2]})`;
+        const color = { r: pixel[0] , g: pixel[1], b: pixel[2] };
+        // const key = deckConfig.hitColorMap.keys().find(x => x.r === color.r && x.g === color.g && x.b === color.b);
+        const key = deckConfig.hitColorMap.keys().find(x => ColorUtils.isSimilar(color, x, deckConfig.colorGenerator.step*0.1));
 
-        if(deckConfig && deckConfig.hitColorMap.has(color)) {
-            console.log(deckConfig.hitColorMap.get(color));
+        if(key) {
+            console.log(deckConfig.hitColorMap.get(key));
         } else {
-            console.log(`Not in z map`);
+            console.log('Cant find color');
         }
     }
 
@@ -217,9 +228,10 @@ class BusSeatConfigView extends ViewBase {
 
         const ctx = deckConfig.hitCanvas.getContext('2d');
         const pixel = ctx.getImageData(mousePos.x, mousePos.y, 1, 1).data;
-        const color = `rgb(${pixel[0]},${pixel[1]},${pixel[2]})`;
+        const color = { r: pixel[0] , g: pixel[1], b: pixel[2] };
 
-        if(color !== deckConfig.hitCanvasBackgroundColor) {
+        const key = deckConfig.hitColorMap.keys().find(x => ColorUtils.isSimilar(color, x, deckConfig.colorGenerator.step*0.1));
+        if(key) {
             canvas.style.cursor = 'pointer';
         } else {
             canvas.style.cursor = 'default';
@@ -235,20 +247,47 @@ class BusSeatConfigViewConfig {
     static BUS_DRIVER_Y_PADDING = 10;
 }
 
+class DistinctRGBColorGenerator {
+    constructor(n) {
+        const step = Math.max(1, Math.floor(Math.cbrt(256 ** 3 / n)));
+        if(!step || step < 0) {
+            throw new Error(`${DistinctRGBColorGenerator.name} cannot generate ${n} distinct colors`);
+        }
 
-function* generateDistinctRgbColors(n) {
-    const step = Math.floor(Math.cbrt(256 ** 3 / n));
-    const totalColors = n;
-    for (let r = 0; r < 256; r += step) {
-        for (let g = 0; g < 256; g += step) {
-            for (let b = 0; b < 256; b += step) {
-                yield `rgb(${r},${g},${b})`;
-                n--;
-                if (n <= 0) {
-                    throw new Error(`${totalColors} colors generated`);
+        this.step = step;
+
+        this._iterator = (function* generator(s) {
+            for (let r = 0; r < 256; r += s) {
+                for (let g = 0; g < 256; g += s) {
+                    for (let b = 0; b < 256; b += s) {
+                        yield { r, g, b};
+                        n--;
+                        if (n <= 0) {
+                            return;
+                        }
+                    }
                 }
             }
+        })(step);
+    }
+
+    getNextValue() {
+        const value = this._iterator.next().value;
+        if(value === undefined) {
+            throw new Error(`Cannot generate any more color`);
         }
+        return value;
+    }
+}
+
+class ColorUtils {
+    static isSimilar(color1, color2, threshold) {
+        const distance = Math.sqrt(Math.pow(color1.r-color2.r, 2)+Math.pow(color1.g-color2.g, 2)+Math.pow(color1.b-color2.b, 2));
+        return distance < threshold;
+    }
+
+    static rgbStrFromObj({r, g, b}) {
+        return `rgb(${r},${g},${b})`;
     }
 }
 
