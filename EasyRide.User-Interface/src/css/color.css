@@ -34,13 +34,16 @@
     --message-warning--btn-close : #FBD64D;
     --message-warning--background : #FFFFF3;
 
-    --seat--seater--line-color : var(--primary-color);
+    
+    --seat--seater--default-line-color : #5d6ab3;
     --seat--seater--default-fill-color : rgba(0,0,0,0);
-    --seat--seater--selected-fill-color : var(--primary-color-tint4);
+    --seat--seater--selected-line-color : #dfe1f0;
+    --seat--seater--selected-fill-color : #5d6ab3;
 
-    --seat--sleeper--line-color : var(--primary-color);
+    --seat--sleeper--default-line-color : #5d6ab3;
     --seat--sleeper--default-fill-color : rgba(0,0,0,0);
-    --seat--sleeper--selected-fill-color : var(--primary-color-tint4);
+    --seat--sleeper--selected-line-color : #dfe1f0;
+    --seat--sleeper--selected-fill-color : #5d6ab3;
 
     --transition-time : 0.3s;
 }

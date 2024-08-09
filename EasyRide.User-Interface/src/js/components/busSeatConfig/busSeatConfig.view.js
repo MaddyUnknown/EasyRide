@@ -13,16 +13,37 @@ class BusSeatConfigView extends ViewBase {
 
     init() {
         this._initElements();
+        this._eventHandlers = new Map();
         this._presenter.init();
     }
 
     destroy() {
         this._presenter.init();
+        this._eventHandlers = undefined;
         this._container = undefined;
     }
 
     _initElements() {
         this._container = document.querySelector('.component--bus-seat-config');
+    }
+
+    addSeatSelectedHandler(handler) {
+        if(!this._eventHandlers.has(BusSeatConfigEvents.SEAT_SELECTED_EVENT)) {
+            this._eventHandlers.set(BusSeatConfigEvents.SEAT_SELECTED_EVENT, []);
+        }
+
+        const eventList = this._eventHandlers.get(BusSeatConfigEvents.SEAT_SELECTED_EVENT);
+        eventList.push(handler);
+    }
+
+    removeSeatSelectedHandler(handler) {
+        if(this._eventHandlers.has(BusSeatConfigEvents.SEAT_SELECTED_EVENT)) {
+            const eventList = this._eventHandlers.get(BusSeatConfigEvents.SEAT_SELECTED_EVENT);
+            const index = eventList.findIndex(x => x === handler);
+            if(index !== -1) {
+                eventList.splice(index, 1);
+            }
+        }
     }
 
     setSeatConfig(data) {
@@ -35,8 +56,8 @@ class BusSeatConfigView extends ViewBase {
             return acc;
         }, []).sort((a, b) => a-b);
 
-        const maxX = Math.max(...data.map(item => item.X+(item.width?item.width-1:0)))
-        const maxY = Math.max(...data.map(item => item.Y+(item.height?item.height-1:0)));
+        const maxX = Math.max(...data.map(item => item.X+(item.spanX?item.spanX-1:0)))
+        const maxY = Math.max(...data.map(item => item.Y+(item.spanY?item.spanY-1:0)));
         
         const busGridSetting = new BusGridSetting(maxX, maxY);
 
@@ -74,16 +95,16 @@ class BusSeatConfigView extends ViewBase {
         hitCtx.fillRect(0,0, hitCanvas.width, hitCanvas.height);
 
         for(const seat of data) {
-            const renderer = seatRendererFactory.getRenderer(seat);
 
+            const renderer = seatRendererFactory.getRenderer(seat);
             const seatColors = ColorUtils.getSeatColor({seatType : seat.type});
-            renderer.render(ctx, busGridSetting, seat, seatColors.lineColor, seatColors.defaultFill);
+            renderer.render(ctx, busGridSetting, seat, seatColors.defaultLine, seatColors.defaultFill);
 
             const hitColor = colorGenerator.getNextValue();
             const hitColorStr = ColorUtils.rgbStrFromObj(hitColor);
             renderer.render(hitCtx, busGridSetting, seat, hitColorStr, hitColorStr);
 
-            deckConfig.hitColorMap.set(hitColor, Object.assign({}, seat));
+            deckConfig.hitColorMap.set(hitColor, { data: seat, state: {} });
         }
 
         canvas.addEventListener('click', this._canvasClickHandler.bind(this));
@@ -110,24 +131,31 @@ class BusSeatConfigView extends ViewBase {
             y: e.clientY - canvas.offsetTop
         };
         
-        const ctx = deckConfig.hitCanvas.getContext('2d');
-        const pixel = ctx.getImageData(mousePos.x, mousePos.y, 1, 1).data;
+        const hitCtx = deckConfig.hitCanvas.getContext('2d');
+        const ctx = deckConfig.displayCanvas.getContext('2d');
+        const pixel = hitCtx.getImageData(mousePos.x, mousePos.y, 1, 1).data;
         const color = { r: pixel[0] , g: pixel[1], b: pixel[2] };
-        // const key = deckConfig.hitColorMap.keys().find(x => x.r === color.r && x.g === color.g && x.b === color.b);
         const key = deckConfig.hitColorMap.keys().find(x => ColorUtils.isSimilar(color, x, deckConfig.colorGenerator.step*0.1));
 
         if(key) {
             const seat = deckConfig.hitColorMap.get(key);
-            console.log(seat);
-            const renderer = this._seatConfigs.seatRendererFactory.getRenderer(seat);
-            const seatColors = ColorUtils.getSeatColor({seatType : seat.type});
+            const renderer = this._seatConfigs.seatRendererFactory.getRenderer(seat.data);
+            const seatColors = ColorUtils.getSeatColor({seatType : seat.data.type});
 
-            renderer.render(deckConfig.displayCanvas.getContext('2d'), this._seatConfigs?.busGridSetting, seat, seatColors.lineColor, seatColors.selectedFill);
-            
-            
+            if(seat.state.isSelected) {
+                seat.state.isSelected = false;
+                renderer.render(ctx, this._seatConfigs?.busGridSetting, seat.data, seatColors.defaultLine, seatColors.defaultFill);
+            } else{
+                seat.state.isSelected = true;
+                renderer.render(ctx, this._seatConfigs?.busGridSetting, seat.data, seatColors.selectedLine, seatColors.selectedFill);
+            }
 
-        } else {
-            console.log('Cant find color');
+            if(this._eventHandlers.has(BusSeatConfigEvents.SEAT_SELECTED_EVENT)) {
+                for(const handler of this._eventHandlers.get(BusSeatConfigEvents.SEAT_SELECTED_EVENT)) {
+                    handler(seat);
+                }
+            }
+
         }
     }
 
@@ -161,6 +189,10 @@ class BusSeatConfigView extends ViewBase {
     }
 }
 
+class BusSeatConfigEvents {
+    static SEAT_SELECTED_EVENT = 'seatSelected';
+}
+
 class SeatRendererBase {
     render(ctx, gridSetting, seatData, lineColor, fillColor) {
         this._render(ctx, gridSetting, seatData, lineColor, fillColor);
@@ -177,7 +209,7 @@ class SeaterSeatRenderer extends SeatRendererBase {
     }
     
     _render(ctx, gridSetting, seatData, lineColor, fillColor) {
-        const { seatX : x, seatY : y, seatWidth : boxWidth, seatHeight : boxHeight } = gridSetting.getSeatDimentions(seatData.X, seatData.Y, seatData.width, seatData.height);
+        const { seatX : x, seatY : y, seatWidth : boxWidth, seatHeight : boxHeight } = gridSetting.getSeatDimentions(seatData.X, seatData.Y, seatData.spanX, seatData.spanY);
         
         ctx.clearRect(x, y, boxWidth, boxHeight);
         
@@ -231,7 +263,7 @@ class SleeperSeatRenderer extends SeatRendererBase {
     }
 
     _render(ctx, gridSetting, seatData, lineColor, fillColor) {
-        const { seatX : x, seatY : y, seatWidth : boxWidth, seatHeight : boxHeight } = gridSetting.getSeatDimentions(seatData.X, seatData.Y, seatData.width, seatData.height);
+        const { seatX : x, seatY : y, seatWidth : boxWidth, seatHeight : boxHeight } = gridSetting.getSeatDimentions(seatData.X, seatData.Y, seatData.spanX, seatData.spanY);
         
         ctx.clearRect(x, y, boxWidth, boxHeight);
 
@@ -333,14 +365,6 @@ class BusGridSetting {
 
         return {width, height};
     }
-}
-
-class BusSeatConfigViewConfig {
-    static GRID_WIDTH = 45;
-    static GRID_HEIGHT = 35;
-    static CANVAS_PADDING_X = 15;
-    static CANVAS_PADDING_Y = 10;
-    static BUS_DRIVER_Y_PADDING = 10;
 }
 
 export { BusSeatConfigView };
