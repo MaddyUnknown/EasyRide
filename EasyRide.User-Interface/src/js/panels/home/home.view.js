@@ -8,7 +8,7 @@ class HomePanelView extends PanelViewBase {
     constructor() {
         super();
         this._presenter = new HomePanelPresenter(this);
-        this._searchBox = new SearchBoxView();
+        this.searchBox = new SearchBoxView();
     }
 
     static get $PANEL_TEMPLATE() {
@@ -23,21 +23,13 @@ class HomePanelView extends PanelViewBase {
     }
 
     init() {
-        this._searchBox.init();
+        this.searchBox.init();
         this._presenter.init();
     }
 
     destroy() {
         this._presenter.destroy();
-        this._searchBox.destroy();
-    }
-
-    addSearchBusHandler(handler) {
-        this._searchBox.addSearchHandler(handler);
-    }
-
-    removeSearchBusHandler(handler) {
-        this._searchBox.removeSearchHandler(handler);
+        this.searchBox.destroy();
     }
 
 }

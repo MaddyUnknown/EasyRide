@@ -12,8 +12,8 @@ class SearchPanelView extends PanelViewBase {
     constructor() {
         super();
         this._presenter = new SearchPanelPresenter(this);
-        this._searchBox = new SearchBoxView();
-        this._busSeatConfig = new BusSeatConfigView();
+        this.searchBox = new SearchBoxView();
+        this.busSeatConfig = new BusSeatConfigView();
     }
 
     static get $PANEL_TEMPLATE() {
@@ -29,40 +29,45 @@ class SearchPanelView extends PanelViewBase {
 
     init() {
         this._container = document.querySelector('.panel--search');
-        this._searchResultContainer = this._container.querySelector('.section--search-result');
-        this._searchResultMessageContainer = this._container.querySelector('.search-result-message');
-        this._searchResultList = this._searchResultContainer.querySelector('.search-result-list');
-        this._busSeatSelectorContainer = this._container.querySelector('.overlay--bus-seat-selection');
+        if(!this._container) {
+            throw new InvalidArgumentError('SearchPanelContainer', this._container);
+        }
 
-        this._resolveFilterSectionScrollVisibality();
+        this._initElements();
+        this.$initateEventHandlerStore();
         
-        this._addFilterSectionResizeHandler();
-        this._searchBox.init();
-        this._busSeatConfig.init();
+        this._resolveFilterSectionScrollVisibality();
+        window.addEventListener('resize', this._resolveFilterSectionScrollVisibality.bind(this));
+        this.searchBox.init();
+        this.busSeatConfig.init();
         this._presenter.init();
     }
 
     destroy() {
         this._presenter.destroy();
-        this._busSeatConfig.destroy();
-        this._searchBox.destroy();
-        this._removeFilterSectionResizeHandler();
+        this.searchBox.destroy();
+        this.busSeatConfig.destroy();
+        window.removeEventListener('resize', this._resolveFilterSectionScrollVisibality.bind(this));
+
+        this.$clearEventHandlerStore();
     }
 
-    addSearchBusHandler(handler) {
-        this._searchBox.addSearchHandler(handler);
+    _initElements() {
+        this._searchResultContainer = this._container.querySelector('.section--search-result');
+        this._searchResultMessageContainer = this._container.querySelector('.search-result-message');
+        this._searchResultList = this._searchResultContainer.querySelector('.search-result-list');
+        this._busSeatSelectorContainer = this._container.querySelector('.overlay--bus-seat-selection');
     }
 
-    removeSearchBusHandler(handler) {
-        this._searchBox.removeSearchHandler(handler);
+    addLoadingAnimationToSearchResult() {
+        this._stopSearchLoadingAnimation = Animation.animateRippleLoading(this._searchResultContainer);
     }
 
-    get searchData() {
-        return this._searchBox.formData;
-    }
-
-    set searchData(value) {
-        this._searchBox.formData = value;
+    removeLoadingAnimationFromSearchResult() {
+        if(this._stopSearchLoadingAnimation) {
+            this._stopSearchLoadingAnimation();
+            this._searchLoadingAnimation = undefined;
+        }
     }
 
     setSearchResultData(searchResultList) {
@@ -78,23 +83,41 @@ class SearchPanelView extends PanelViewBase {
         }
     }
 
-    addLoadingAnimationToSearchResult() {
-        this._stopSearchLoadingAnimation = Animation.animateRippleLoading(this._searchResultContainer);
-    }
-
-    removeLoadingAnimationFromSearchResult() {
-        if(this._stopSearchLoadingAnimation) {
-            this._stopSearchLoadingAnimation();
-            this._searchLoadingAnimation = undefined;
+    addEventHandler(event, handler) {
+        let wrapperHandler;
+        switch(event) {
+            case 'seat-view':
+                wrapperHandler = (e) => {
+                    const viewSeatBtn = e.target.closest('.btn--view-seats');
+                    if(viewSeatBtn) {
+                        const busContainer = viewSeatBtn.closest('.search-result-item');
+                        if(busContainer) {
+                            handler({ busIndex : busContainer.dataset.index });
+                        } else {
+                            console.error('Bus data not found');
+                        }
+                    }
+                }
+                this._container.addEventListener('click', wrapperHandler);
+                break;
+            default:
+                throw new InvalidArgumentError('eventType', eventType);
         }
+        this.$storeEventHandler(event, handler, wrapperHandler);
     }
 
-    _addFilterSectionResizeHandler() {
-        window.addEventListener('resize', this._resolveFilterSectionScrollVisibality.bind(this));
-    }
+    removeEventHandler(event, handler) {
+        const wrapperHandler = this.$getStoredWrapperEventHandler(event, handler);
+        this.$removeStoredEventHandler(event, handler);
+        if(!wrapperHandler) {
+            return;
+        }
 
-    _removeFilterSectionResizeHandler() {
-        window.removeEventListener('resize', this._resolveFilterSectionScrollVisibality.bind(this));
+        switch (event) {
+            case 'seat-view':
+                this._container.removeEventListener('wrapperHandler', wrapperHandler);
+                break;
+        }
     }
 
     _resolveFilterSectionScrollVisibality() {
@@ -139,6 +162,10 @@ class SearchPanelView extends PanelViewBase {
 
         return itemContainer;
     }
+}
+
+class SearchPanelEvents {
+    VIEW_SEAT_EVENT = 'ViewSeatEvent';
 }
 
 export {SearchPanelView};

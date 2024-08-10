@@ -12,15 +12,17 @@ class HomePanelPresenter {
     }
 
     init() {
-        this._view.addSearchBusHandler(this.searchBusHandler.bind(this));
+        this._boundSearchBusHandler = this.searchBusHandler.bind(this);
+        this._view.searchBox.addEventHandler('validated-search', this._boundSearchBusHandler);
     }
 
     destroy() {
-        this._view.removeSearchBusHandler(this.searchBusHandler.bind(this));
+        this._view.searchBox.removeEventHandler('validated-search', this._boundSearchBusHandler);
+        this._boundSearchBusHandler = undefined;
     }
 
     searchBusHandler(eventData) {
-        const {boardingPoint, droppingPoint, boardingDate} = eventData.detail;
+        const {boardingPoint, droppingPoint, boardingDate} = eventData;
         router.navigateToRoute('/search', {
             queryParams : {
                 boardingPoint,

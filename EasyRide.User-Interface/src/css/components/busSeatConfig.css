@@ -6,4 +6,5 @@
 .component--bus-seat-config canvas {
     border: 0.1rem solid var(--light-grey);
     border-radius: 0.8rem;
+    -webkit-tap-highlight-color: transparent; /* Prevent highlighting on tap */
 }

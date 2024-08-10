@@ -12,36 +12,43 @@ class BusSeatConfigView extends ViewBase {
     }
 
     init() {
-        this._initElements();
-        this._eventHandlers = new Map();
+        this._container = document.querySelector('.component--bus-seat-config');
+        if(!this._container) {
+            throw new InvalidArgumentError('SeatConfigContainer', this._container);
+        }
+
+        this.$initateEventHandlerStore();
         this._presenter.init();
     }
 
     destroy() {
         this._presenter.init();
-        this._eventHandlers = undefined;
+        this.$clearEventHandlerStore();
         this._container = undefined;
     }
 
-    _initElements() {
-        this._container = document.querySelector('.component--bus-seat-config');
-    }
-
-    addSeatSelectedHandler(handler) {
-        if(!this._eventHandlers.has(BusSeatConfigEvents.SEAT_SELECTED_EVENT)) {
-            this._eventHandlers.set(BusSeatConfigEvents.SEAT_SELECTED_EVENT, []);
+    addEventHandler(event, handler) {
+        let wrapperHandler;
+        switch(event) {
+            case 'seat-selected':
+                wrapperHandler = (e) => { handler(); };
+                break;
+            default:
+                throw new InvalidArgumentError('eventType', eventType);
         }
-
-        const eventList = this._eventHandlers.get(BusSeatConfigEvents.SEAT_SELECTED_EVENT);
-        eventList.push(handler);
+        this.$storeEventHandler(event, handler, wrapperHandler);
     }
 
-    removeSeatSelectedHandler(handler) {
-        if(this._eventHandlers.has(BusSeatConfigEvents.SEAT_SELECTED_EVENT)) {
-            const eventList = this._eventHandlers.get(BusSeatConfigEvents.SEAT_SELECTED_EVENT);
-            const index = eventList.findIndex(x => x === handler);
-            if(index !== -1) {
-                eventList.splice(index, 1);
+    removeEventHandler(event, handler) {
+        // const wrapperHandler = this.$getStoredWrapperEventHandler(event, handler);
+        this.$removeStoredEventHandler(event, handler);
+    }
+
+    _dispatchSeatSelected(seatSelectedData) {
+        const funcMap = this.$getStoredWrapperEventHandler('validate-search');
+        if(funcMap) {
+            for(const [, wrapperHandler] in funcMap.entries()) {
+                wrapperHandler(seatSelectedData);
             }
         }
     }
@@ -72,6 +79,11 @@ class BusSeatConfigView extends ViewBase {
             busGridSetting,
             seatRendererFactory
         }
+    }
+
+    clearSeatConfig() {
+        this._container.innerHTML = '';
+        this._seatConfigs = undefined;
     }
 
     _createDeckConfig(zIndex, data, busGridSetting, seatRendererFactory) {
@@ -110,11 +122,11 @@ class BusSeatConfigView extends ViewBase {
         canvas.addEventListener('click', this._canvasClickHandler.bind(this));
         canvas.addEventListener('mousemove', throttle(this._canvasHoverHandler.bind(this), 50));
 
-
         return deckConfig;
     }
 
     _canvasClickHandler(e) {
+        e.preventDefault();
         const canvas = e.target.closest('.component--bus-seat-config canvas');
         if(!canvas) {
             return;
@@ -150,12 +162,7 @@ class BusSeatConfigView extends ViewBase {
                 renderer.render(ctx, this._seatConfigs?.busGridSetting, seat.data, seatColors.selectedLine, seatColors.selectedFill);
             }
 
-            if(this._eventHandlers.has(BusSeatConfigEvents.SEAT_SELECTED_EVENT)) {
-                for(const handler of this._eventHandlers.get(BusSeatConfigEvents.SEAT_SELECTED_EVENT)) {
-                    handler(seat);
-                }
-            }
-
+            _dispatchSeatSelected(seat);
         }
     }
 
@@ -187,10 +194,6 @@ class BusSeatConfigView extends ViewBase {
             canvas.style.cursor = 'default';
         }
     }
-}
-
-class BusSeatConfigEvents {
-    static SEAT_SELECTED_EVENT = 'seatSelected';
 }
 
 class SeatRendererBase {

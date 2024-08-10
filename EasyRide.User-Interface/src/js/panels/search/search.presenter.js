@@ -13,16 +13,27 @@ class SearchPanelPresenter {
     }
 
     init() {
-        this._view.addSearchBusHandler(this.searchBusHandler.bind(this));
+        this._boundSearchBusHandler = this.searchBusHandler.bind(this);
+        this._boundSeatSelectedHandler = this.seatSelectedHandler.bind(this);
+        this._boundSeatViewHandler = this.seatViewHandler.bind(this);
+
+        this._view.searchBox.addEventHandler('validated-search', this._boundSearchBusHandler);
+        this._view.busSeatConfig.addEventHandler('seat-selected', this._boundSeatSelectedHandler);
+        this._view.addEventHandler('seat-view', this._boundSeatViewHandler);
+
         this.initSearchResult();
     }
 
     destroy() {
-        this._view.removeSearchBusHandler(this.searchBusHandler.bind(this));
+        this._view.searchBox.removeEventHandler('validated-search', this._boundSearchBusHandler);
+        this._view.busSeatConfig.removeEventHandler('seat-selected', this._boundSeatSelectedHandler);
+        this._view.addEventHandler('seat-view', this._boundSeatViewHandler);
+
+        this._boundSearchBusHandler = this._boundSeatSelectedHandler = this._boundSeatViewHandler = undefined;
     }
 
-    searchBusHandler(eventData) {
-        const {boardingPoint, droppingPoint, boardingDate} = eventData.detail;
+    searchBusHandler(searchData) {
+        const {boardingPoint, droppingPoint, boardingDate} = searchData;
         router.navigateToRoute('/search', {
             queryParams : {
                 boardingPoint,
@@ -30,6 +41,14 @@ class SearchPanelPresenter {
                 boardingDate
             }
         });
+    }
+
+    seatSelectedHandler(seatSelectedData) {
+        console.log(seatSelectedData);
+    }
+
+    seatViewHandler(eventData) {
+        console.log(eventData);
     }
 
     async initSearchResult() {
@@ -40,7 +59,7 @@ class SearchPanelPresenter {
         }
         
         try {
-            this._view.searchData = { boardingPoint, droppingPoint, boardingDate };
+            this._view.searchBox.searchData = { boardingPoint, droppingPoint, boardingDate };
             this._view.addLoadingAnimationToSearchResult();
             const data  = await FetchUtils.fetchListOfBusDetails(boardingPoint, droppingPoint, boardingDate);
             this._view.setSearchResultData(data);
