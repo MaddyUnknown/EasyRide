@@ -16,10 +16,12 @@ class SearchPanelPresenter {
         this._boundSearchBusHandler = this.searchBusHandler.bind(this);
         this._boundSeatSelectedHandler = this.seatSelectedHandler.bind(this);
         this._boundSeatViewHandler = this.seatViewHandler.bind(this);
+        this._boundHideViewHandler = this.hideViewHandler.bind(this);
 
         this._view.searchBox.addEventHandler('validated-search', this._boundSearchBusHandler);
         this._view.busSeatConfig.addEventHandler('seat-selected', this._boundSeatSelectedHandler);
         this._view.addEventHandler('seat-view', this._boundSeatViewHandler);
+        this._view.addEventHandler('close-seat-view', this._boundHideViewHandler);
 
         this.initSearchResult();
     }
@@ -27,9 +29,10 @@ class SearchPanelPresenter {
     destroy() {
         this._view.searchBox.removeEventHandler('validated-search', this._boundSearchBusHandler);
         this._view.busSeatConfig.removeEventHandler('seat-selected', this._boundSeatSelectedHandler);
-        this._view.addEventHandler('seat-view', this._boundSeatViewHandler);
+        this._view.removeEventHandler('seat-view', this._boundSeatViewHandler);
+        this._view.removeEventHandler('close-seat-view', this._boundHideViewHandler);
 
-        this._boundSearchBusHandler = this._boundSeatSelectedHandler = this._boundSeatViewHandler = undefined;
+        this._boundSearchBusHandler = this._boundSeatSelectedHandler = this._boundSeatViewHandler = this._boundHideViewHandler = undefined;
     }
 
     searchBusHandler(searchData) {
@@ -47,8 +50,23 @@ class SearchPanelPresenter {
         console.log(seatSelectedData);
     }
 
-    seatViewHandler(eventData) {
-        console.log(eventData);
+    async seatViewHandler(seatViewData) {
+        const stopAnimation = this._view.busSeatConfig.addLoadingAnimation({ container : 'seat-config' });
+        
+        try {
+            this._view.showSeatConfigScreen();
+            const seatConfig = await FetchUtils.fetchBusSeatConfigDetails(seatViewData.busIndex);
+            this._view.busSeatConfig.setSeatConfig(seatConfig);
+        } catch(ex) {
+            console.error(ex);
+            messageInfoComponent.addErrorMessage('Error while getting bus seat details');
+        }
+
+        stopAnimation();
+    }
+
+    hideViewHandler() {
+        this._view.hideSeatConfigScreen();
     }
 
     async initSearchResult() {
@@ -58,18 +76,18 @@ class SearchPanelPresenter {
             return;
         }
         
+        const stopAnimation = this._view.addLoadingAnimation({ container : 'search-result' });
+        
         try {
             this._view.searchBox.searchData = { boardingPoint, droppingPoint, boardingDate };
-            this._view.addLoadingAnimationToSearchResult();
             const data  = await FetchUtils.fetchListOfBusDetails(boardingPoint, droppingPoint, boardingDate);
             this._view.setSearchResultData(data);
-            this._view.removeLoadingAnimationFromSearchResult();
         } catch(ex) {
             console.error(ex);
             messageInfoComponent.addErrorMessage('Error while getting bus details');
         }
 
-        this._view.removeLoadingAnimationFromSearchResult();
+        stopAnimation();
     }
 }
 

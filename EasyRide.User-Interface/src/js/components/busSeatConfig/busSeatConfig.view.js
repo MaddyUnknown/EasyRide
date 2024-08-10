@@ -3,6 +3,7 @@ import { ViewBase } from "./../../modules/viewModule";
 import { BusSeatConfigPresenter } from "./busSeatConfig.presenter";
 import { DistinctRGBColorGenerator, ColorUtils } from "../../utils/colorUtils";
 import { ApplicationError } from "../../modules/errorModule";
+import { Animation } from "../../modules/animationModule";
 
 class BusSeatConfigView extends ViewBase {
 
@@ -17,6 +18,8 @@ class BusSeatConfigView extends ViewBase {
             throw new InvalidArgumentError('SeatConfigContainer', this._container);
         }
 
+        this._canvasContainer = this._container.querySelector('.container--seat-canvas');
+
         this.$initateEventHandlerStore();
         this._presenter.init();
     }
@@ -24,7 +27,17 @@ class BusSeatConfigView extends ViewBase {
     destroy() {
         this._presenter.init();
         this.$clearEventHandlerStore();
+        this._canvasContainer = undefined;
         this._container = undefined;
+    }
+
+    addLoadingAnimation({ container }) {
+        switch(container) {
+            case 'seat-config':
+                return Animation.animateRippleLoading(this._container, {zIndex : 1000, align : 'center' });
+            default:
+                throw new InvalidArgumentError('container', container);
+        }
     }
 
     addEventHandler(event, handler) {
@@ -54,7 +67,7 @@ class BusSeatConfigView extends ViewBase {
     }
 
     setSeatConfig(data) {
-        this._container.innerHTML = '';
+        this._canvasContainer.innerHTML = '';
         
         const deckConfigMap = new Map();
         const seatRendererFactory = new SeatRendererFactory();
@@ -71,7 +84,7 @@ class BusSeatConfigView extends ViewBase {
         for(const z of zValues) {
             const deckConfig = this._createDeckConfig(z, data.filter(index => index.Z === z), busGridSetting, seatRendererFactory);
             deckConfigMap.set(z.toString(), deckConfig);
-            this._container.appendChild(deckConfig.displayCanvas);
+            this._canvasContainer.appendChild(deckConfig.displayCanvas);
         }
 
         this._seatConfigs = {
@@ -82,7 +95,7 @@ class BusSeatConfigView extends ViewBase {
     }
 
     clearSeatConfig() {
-        this._container.innerHTML = '';
+        this._canvasContainer.innerHTML = '';
         this._seatConfigs = undefined;
     }
 
@@ -162,7 +175,7 @@ class BusSeatConfigView extends ViewBase {
                 renderer.render(ctx, this._seatConfigs?.busGridSetting, seat.data, seatColors.selectedLine, seatColors.selectedFill);
             }
 
-            _dispatchSeatSelected(seat);
+            this._dispatchSeatSelected(seat);
         }
     }
 

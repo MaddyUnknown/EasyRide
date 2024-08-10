@@ -7,6 +7,7 @@ import { PanelViewBase } from "../../modules/viewModule";
 import { SearchPanelPresenter } from "./search.presenter";
 import { DateUtils } from "../../utils/dateUtils";
 import { Animation } from "../../modules/animationModule";
+import { InvalidArgumentError } from "../../modules/errorModule";
 
 class SearchPanelView extends PanelViewBase {
     constructor() {
@@ -59,15 +60,21 @@ class SearchPanelView extends PanelViewBase {
         this._busSeatSelectorContainer = this._container.querySelector('.overlay--bus-seat-selection');
     }
 
-    addLoadingAnimationToSearchResult() {
-        this._stopSearchLoadingAnimation = Animation.animateRippleLoading(this._searchResultContainer);
+    addLoadingAnimation({ container }) {
+        switch(container) {
+            case 'search-result':
+                return Animation.animateRippleLoading(this._searchResultContainer);
+            default:
+                throw new InvalidArgumentError('container', container);
+        }
     }
 
-    removeLoadingAnimationFromSearchResult() {
-        if(this._stopSearchLoadingAnimation) {
-            this._stopSearchLoadingAnimation();
-            this._searchLoadingAnimation = undefined;
-        }
+    showSeatConfigScreen() {
+        this._busSeatSelectorContainer.classList.add('show');
+    }
+
+    hideSeatConfigScreen() {
+        this._busSeatSelectorContainer.classList.remove('show');
     }
 
     setSearchResultData(searchResultList) {
@@ -100,6 +107,10 @@ class SearchPanelView extends PanelViewBase {
                 }
                 this._container.addEventListener('click', wrapperHandler);
                 break;
+            case 'close-seat-view':
+                wrapperHandler = (e) => { handler(); }
+                this._busSeatSelectorContainer.querySelector('.btn--close-bus-seat-selection').addEventListener('click', wrapperHandler);
+                break;
             default:
                 throw new InvalidArgumentError('eventType', eventType);
         }
@@ -116,6 +127,9 @@ class SearchPanelView extends PanelViewBase {
         switch (event) {
             case 'seat-view':
                 this._container.removeEventListener('wrapperHandler', wrapperHandler);
+                break;
+            case 'close-seat-view':
+                this._busSeatSelectorContainer.querySelector('.btn--close-bus-seat-selection').removeEventListener('click', wrapperHandler);
                 break;
         }
     }

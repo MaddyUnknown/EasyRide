@@ -9,23 +9,28 @@ function debounce(func, wait) {
 function throttle(func, limit) {
     let lastFunc;
     let lastRan;
-    
+
     return function(...args) {
-      const context = this;
-      if (!lastRan) {
-        func.apply(context, args);
-        lastRan = Date.now();
-      } else {
-        clearTimeout(lastFunc);
-        lastFunc = setTimeout(() => {
-          if (Date.now() - lastRan >= limit) {
+        const context = this;
+        if (!lastRan) {
             func.apply(context, args);
             lastRan = Date.now();
-          }
-        }, limit - (Date.now() - lastRan));
-      }
+        } else {
+            clearTimeout(lastFunc);
+            lastFunc = setTimeout(() => {
+                if (Date.now() - lastRan >= limit) {
+                    func.apply(context, args);
+                    lastRan = Date.now();
+                }
+            }, limit - (Date.now() - lastRan));
+        }
     };
-  }
+}
 
+function asycWait(timeoutMs) {
+    return new Promise((resolve) => {
+        setTimeout(() => resolve(), timeoutMs);
+    });
+} 
 
-export {debounce, throttle};
+export {debounce, throttle, asycWait};
