@@ -85,6 +85,8 @@ class BusSeatConfigView extends ViewBase {
             const deckConfig = this._createDeckConfig(z, data.filter(index => index.Z === z), busGridSetting, seatRendererFactory);
             deckConfigMap.set(z.toString(), deckConfig);
             this._canvasContainer.appendChild(deckConfig.displayCanvas);
+            // this._canvasContainer.appendChild(deckConfig.hitCanvas);
+
         }
 
         this._seatConfigs = {
@@ -105,9 +107,16 @@ class BusSeatConfigView extends ViewBase {
         const colorGenerator = new DistinctRGBColorGenerator(500);
         const deckConfig = { hitCanvas, displayCanvas : canvas, hitColorMap : new Map(), colorGenerator };
 
-        const { width : canvasWidth, height : canvasHeight } = busGridSetting.getBusDimentions();
-        canvas.width = hitCanvas.width = canvasWidth; 
-        canvas.height = hitCanvas.height = canvasHeight;
+        const { width : renderWidth , height : renderHeight } = busGridSetting.getBusDimentions({upscaleDimentions : true});
+        canvas.width = renderWidth; 
+        canvas.height = renderHeight;
+
+        const { width, height } = busGridSetting.getBusDimentions();
+        canvas.style.width = `${width}px`;
+        canvas.style.height = `${height}px`;
+        hitCanvas.width = width;
+        hitCanvas.height = height;
+
         canvas.dataset.zIndex = zIndex;
 
 
@@ -117,17 +126,17 @@ class BusSeatConfigView extends ViewBase {
         deckConfig.hitCanvasBackgroundColor = colorGenerator.getNextValue();
         hitCtx.fillStyle = ColorUtils.rgbStrFromObj(deckConfig.hitCanvasBackgroundColor);
         hitCtx.lineWidth = 2;
+        ctx.lineWidth = 3;
         hitCtx.fillRect(0,0, hitCanvas.width, hitCanvas.height);
 
         for(const seat of data) {
-
             const renderer = seatRendererFactory.getRenderer(seat);
             const seatColors = ColorUtils.getSeatColor({seatType : seat.type});
-            renderer.render(ctx, busGridSetting, seat, seatColors.defaultLine, seatColors.defaultFill);
+            renderer.render(ctx, busGridSetting, seat, seatColors.defaultLine, seatColors.defaultFill, {upscaleDimentions : true});
 
             const hitColor = colorGenerator.getNextValue();
             const hitColorStr = ColorUtils.rgbStrFromObj(hitColor);
-            renderer.render(hitCtx, busGridSetting, seat, hitColorStr, hitColorStr);
+            renderer.render(hitCtx, busGridSetting, seat, hitColorStr, hitColorStr, {clearCanvas : false});
 
             deckConfig.hitColorMap.set(hitColor, { data: seat, state: {} });
         }
@@ -169,10 +178,10 @@ class BusSeatConfigView extends ViewBase {
 
             if(seat.state.isSelected) {
                 seat.state.isSelected = false;
-                renderer.render(ctx, this._seatConfigs?.busGridSetting, seat.data, seatColors.defaultLine, seatColors.defaultFill);
+                renderer.render(ctx, this._seatConfigs?.busGridSetting, seat.data, seatColors.defaultLine, seatColors.defaultFill, {upscaleDimentions : true});
             } else{
                 seat.state.isSelected = true;
-                renderer.render(ctx, this._seatConfigs?.busGridSetting, seat.data, seatColors.selectedLine, seatColors.selectedFill);
+                renderer.render(ctx, this._seatConfigs?.busGridSetting, seat.data, seatColors.selectedLine, seatColors.selectedFill, {upscaleDimentions : true});
             }
 
             this._dispatchSeatSelected(seat);
@@ -210,11 +219,11 @@ class BusSeatConfigView extends ViewBase {
 }
 
 class SeatRendererBase {
-    render(ctx, gridSetting, seatData, lineColor, fillColor) {
-        this._render(ctx, gridSetting, seatData, lineColor, fillColor);
+    render(ctx, gridSetting, seatData, lineColor, fillColor, { upscaleDimentions = false, clearCanvas = true } = {}) {
+        this._render(ctx, gridSetting, seatData, lineColor, fillColor, {upscaleDimentions, clearCanvas});
     }
 
-    _render(ctx, gridSetting, seatData, lineColor, fillColor) {
+    _render(ctx, gridSetting, seatData, lineColor, fillColor, {upscaleDimentions, clearCanvas}) {
         throw new Error(`Render method is not implemented`);
     }
 }
@@ -224,10 +233,12 @@ class SeaterSeatRenderer extends SeatRendererBase {
         super();
     }
     
-    _render(ctx, gridSetting, seatData, lineColor, fillColor) {
-        const { seatX : x, seatY : y, seatWidth : boxWidth, seatHeight : boxHeight } = gridSetting.getSeatDimentions(seatData.X, seatData.Y, seatData.spanX, seatData.spanY);
+    _render(ctx, gridSetting, seatData, lineColor, fillColor, {upscaleDimentions, clearCanvas}) {
+        const { seatX : x, seatY : y, seatWidth : boxWidth, seatHeight : boxHeight } = gridSetting.getSeatDimentions(seatData.X, seatData.Y, seatData.spanX, seatData.spanY, upscaleDimentions);
         
-        ctx.clearRect(x, y, boxWidth, boxHeight);
+        if(clearCanvas === true) {
+            ctx.clearRect(x, y, boxWidth, boxHeight);
+        }
         
         const size = Math.min(boxWidth, boxHeight)*0.7;
         const seatRadius = 0.1*size;
@@ -278,10 +289,12 @@ class SleeperSeatRenderer extends SeatRendererBase {
         super();
     }
 
-    _render(ctx, gridSetting, seatData, lineColor, fillColor) {
-        const { seatX : x, seatY : y, seatWidth : boxWidth, seatHeight : boxHeight } = gridSetting.getSeatDimentions(seatData.X, seatData.Y, seatData.spanX, seatData.spanY);
+    _render(ctx, gridSetting, seatData, lineColor, fillColor, {upscaleDimentions, clearCanvas}) {
+        const { seatX : x, seatY : y, seatWidth : boxWidth, seatHeight : boxHeight } = gridSetting.getSeatDimentions(seatData.X, seatData.Y, seatData.spanX, seatData.spanY, upscaleDimentions);
         
-        ctx.clearRect(x, y, boxWidth, boxHeight);
+        if(clearCanvas) {
+            ctx.clearRect(x, y, boxWidth, boxHeight);
+        }
 
         const bedHeight = boxHeight*0.7;
         const bedWidth = boxWidth/2;
@@ -356,7 +369,7 @@ class SeatRendererFactory {
 }
 
 class BusGridSetting {
-    constructor(maxXIndex, maxYIndex, {gridPaddingX = 15, gridPaddingY = 10, gridItemHeight = 35, gridItemWidth = 45, driverSeatPaddingY = 10} = {}) {
+    constructor(maxXIndex, maxYIndex, {gridPaddingX = 15, gridPaddingY = 10, gridItemHeight = 35, gridItemWidth = 45, driverSeatPaddingY = 10, dpi = 3} = {}) {
         this._maxXIndex = maxXIndex;
         this._maxYIndex = maxYIndex;
         this._gridPaddingX = gridPaddingX;
@@ -364,20 +377,22 @@ class BusGridSetting {
         this._gridItemHeight = gridItemHeight;
         this._gridItemWidth = gridItemWidth;
         this._driverSeatPaddingY = driverSeatPaddingY;
+
+        this._DPI = dpi;
     }
 
-    getSeatDimentions(seatXIndex, seatYIndex, seatSpanX = 1, seatSpanY = 1) {
-        const seatX = seatXIndex*this._gridItemWidth + this._gridPaddingX;
-        const seatY = (this._maxYIndex-seatYIndex-seatSpanY+1)*this._gridItemHeight + this._gridPaddingY;
-        const seatWidth = seatSpanX*this._gridItemWidth; 
-        const seatHeight = (seatSpanY)*this._gridItemHeight;
+    getSeatDimentions(seatXIndex, seatYIndex, seatSpanX = 1, seatSpanY = 1, upscaleDimentions = false) {
+        const seatX = (seatXIndex*this._gridItemWidth + this._gridPaddingX)*(upscaleDimentions?this._DPI:1);
+        const seatY = ((this._maxYIndex-seatYIndex-seatSpanY+1)*this._gridItemHeight + this._gridPaddingY)*(upscaleDimentions?this._DPI:1);
+        const seatWidth = (seatSpanX*this._gridItemWidth)*(upscaleDimentions?this._DPI:1); 
+        const seatHeight = ((seatSpanY)*this._gridItemHeight)*(upscaleDimentions?this._DPI:1);
 
         return { seatX, seatY, seatWidth, seatHeight };
     }
 
-    getBusDimentions() {
-        const width = (this._maxXIndex+1)*this._gridItemWidth + this._gridPaddingX*2; 
-        const height = (this._maxYIndex+2)*this._gridItemHeight + this._gridPaddingY*2 + this._driverSeatPaddingY;
+    getBusDimentions(upscaleDimentions = false) {
+        const width = ((this._maxXIndex+1)*this._gridItemWidth + this._gridPaddingX*2)*(upscaleDimentions?this._DPI:1); 
+        const height = ((this._maxYIndex+2)*this._gridItemHeight + this._gridPaddingY*2 + this._driverSeatPaddingY)*(upscaleDimentions?this._DPI:1);
 
         return {width, height};
     }
