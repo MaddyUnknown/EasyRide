@@ -18,16 +18,23 @@ class BusSeatConfigView extends ViewBase {
             throw new InvalidArgumentError('SeatConfigContainer', this._container);
         }
 
+        this._deckSelectorContainer = this._container.querySelector('.container--deck-selector');
         this._canvasContainer = this._container.querySelector('.container--seat-canvas');
-
+        this._bindDeckSelectorClickHandler = this._deckSelectorClickHandler.bind(this);
         this.$initateEventHandlerStore();
+        this.addEventHandler('deck-selector-clicked', this._bindDeckSelectorClickHandler);
+
         this._presenter.init();
     }
 
     destroy() {
         this._presenter.init();
+        this.removeEventHandler('deck-selector-clicked', this._bindDeckSelectorClickHandler);
         this.$clearEventHandlerStore();
+        this._bindDeckSelectorClickHandler = undefined;
         this._canvasContainer = undefined;
+        this._deckSelectorContainer = undefined;
+        this._deckSelectorHighlight = undefined;
         this._container = undefined;
     }
 
@@ -46,6 +53,10 @@ class BusSeatConfigView extends ViewBase {
             case 'seat-selected':
                 wrapperHandler = (e) => { handler(); };
                 break;
+            case 'deck-selector-clicked':
+                wrapperHandler = (e) => { handler(e); };
+                this._deckSelectorContainer.addEventListener('click', wrapperHandler);
+                break;
             default:
                 throw new InvalidArgumentError('eventType', eventType);
         }
@@ -53,8 +64,18 @@ class BusSeatConfigView extends ViewBase {
     }
 
     removeEventHandler(event, handler) {
-        // const wrapperHandler = this.$getStoredWrapperEventHandler(event, handler);
+        const wrapperHandler = this.$getStoredWrapperEventHandler(event, handler);
         this.$removeStoredEventHandler(event, handler);
+        
+        if(!wrapperHandler) {
+            return;
+        }
+
+        switch (event) {
+            case 'deck-selector-clicked':
+                this._deckSelectorContainer.removeEventListener('click', wrapperHandler);
+                break;
+        }
     }
 
     _dispatchSeatSelected(seatSelectedData) {
@@ -67,10 +88,8 @@ class BusSeatConfigView extends ViewBase {
     }
 
     setSeatConfig(data) {
-        this._canvasContainer.innerHTML = '';
-        
-        const deckConfigMap = new Map();
-        const seatRendererFactory = new SeatRendererFactory();
+        this.clearSeatConfig();
+
         const zValues = data.reduce((acc, item) => {
             if(acc.findIndex(i => i === item.Z) === -1) acc.push(item.Z); 
             return acc;
@@ -78,30 +97,70 @@ class BusSeatConfigView extends ViewBase {
 
         const maxX = Math.max(...data.map(item => item.X+(item.spanX?item.spanX-1:0)))
         const maxY = Math.max(...data.map(item => item.Y+(item.spanY?item.spanY-1:0)));
-        
-        const busGridSetting = new BusGridSetting(maxX, maxY);
 
-        for(const z of zValues) {
-            const deckConfig = this._createDeckConfig(z, data.filter(index => index.Z === z), busGridSetting, seatRendererFactory);
+        this._seatConfigs = {deckIndexValues : this._initiateDeckSelector(zValues) };
+        const initDeckCanvasResult = this._initiateAllDeckCanvas(maxX, maxY, zValues, data);
+        this._setActiveZValue(0);
+
+        Object.assign(this._seatConfigs, initDeckCanvasResult);
+    }
+
+    clearSeatConfig() {
+        this._canvasContainer.innerHTML = '';
+        this._deckSelectorContainer.innerHTML = '';
+        this._seatConfigs = undefined;
+    }
+
+    _initiateDeckSelector(deckIndexValues) {
+        const highlight = this._getDeckSelectorHighlightElement();
+        this._deckSelectorContainer.appendChild(highlight);
+        this._deckSelectorHighlight = highlight;
+
+        for(let i=0; i<deckIndexValues.length; i++) {
+            const element = this._getDeckSelectorElement(deckIndexValues[i], i);
+            this._deckSelectorContainer.appendChild(element);
+        }
+
+        return deckIndexValues;
+    }
+
+    _initiateAllDeckCanvas(maxXIndex, maxYIndex, deckIndexValues, data) {
+        const deckConfigMap = new Map();
+        const seatRendererFactory = new SeatRendererFactory();
+        const busGridSetting = new BusGridSetting(maxXIndex, maxYIndex);
+
+        for(const z of deckIndexValues) {
+            const deckConfig = this._getDeckCanvas(z, data.filter(index => index.Z === z), busGridSetting, seatRendererFactory);
             deckConfigMap.set(z.toString(), deckConfig);
             this._canvasContainer.appendChild(deckConfig.displayCanvas);
             // this._canvasContainer.appendChild(deckConfig.hitCanvas);
 
         }
 
-        this._seatConfigs = {
+        return {
             deckConfigMap,
             busGridSetting,
             seatRendererFactory
         }
     }
 
-    clearSeatConfig() {
-        this._canvasContainer.innerHTML = '';
-        this._seatConfigs = undefined;
+    _getDeckSelectorHighlightElement() {
+        const element = document.createElement('div');
+        element.classList.add('highlight--deck-selector');
+
+        return element;
     }
 
-    _createDeckConfig(zIndex, data, busGridSetting, seatRendererFactory) {
+    _getDeckSelectorElement(zValue, zIndexPosition) {
+        const element = document.createElement('div');
+        element.classList.add('btn--deck-selector');
+        element.dataset.position = zIndexPosition;
+        element.textContent = zValue;
+
+        return element;
+    }
+
+    _getDeckCanvas(zIndex, data, busGridSetting, seatRendererFactory) {
         const canvas = document.createElement('canvas');
         const hitCanvas = document.createElement('canvas');
         const colorGenerator = new DistinctRGBColorGenerator(500);
@@ -129,7 +188,7 @@ class BusSeatConfigView extends ViewBase {
         ctx.lineWidth = 3;
         hitCtx.fillRect(0,0, hitCanvas.width, hitCanvas.height);
 
-        if(zIndex === 0) {
+        if(zIndex === 'L' || zIndex === 0) {
             const renderer = seatRendererFactory.getRenderer({ type : 'driver' });
             const seatColors = ColorUtils.getSeatColor({seatType : 'driver'});
             renderer.render(ctx, busGridSetting, {}, seatColors.defaultLine, seatColors.defaultFill, {upscaleDimentions : true});
@@ -152,6 +211,27 @@ class BusSeatConfigView extends ViewBase {
         canvas.addEventListener('mousemove', throttle(this._canvasHoverHandler.bind(this), 50));
 
         return deckConfig;
+    }
+
+    _setActiveZValue(zIndexPosition) {
+
+
+        const elementList = [...this._deckSelectorContainer.querySelectorAll(`.btn--deck-selector`)];
+        const currentActive = elementList.find(x => x.classList.contains('active'));
+        if(currentActive) {
+            currentActive.classList.remove('active');
+        }
+
+        const newActive = elementList.find(x=>x.dataset.position === zIndexPosition.toString());
+        if(!newActive) {
+            return;
+        }
+        newActive.classList.add('active');
+
+        if(this._deckSelectorHighlight) {
+            this._deckSelectorHighlight.style.transform = `translateY(${zIndexPosition*100}%)`;
+        }
+
     }
 
     _canvasClickHandler(e) {
@@ -221,6 +301,18 @@ class BusSeatConfigView extends ViewBase {
             canvas.style.cursor = 'pointer';
         } else {
             canvas.style.cursor = 'default';
+        }
+    }
+
+    _deckSelectorClickHandler(e) {
+        const element = e.target.closest('.btn--deck-selector');
+        if(!element) {
+            return;
+        }
+
+        const position = element.dataset.position;
+        if(position) {
+            this._setActiveZValue(position);
         }
     }
 }

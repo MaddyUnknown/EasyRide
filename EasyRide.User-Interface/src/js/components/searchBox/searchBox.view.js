@@ -28,7 +28,6 @@ class SearchBoxView extends ViewBase {
     }
 
     destroy() {
-        // debugger;
         this._presenter.destroy();
 
         this.$clearEventHandlerStore();

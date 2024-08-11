@@ -24,7 +24,8 @@ class FetchUtils {
             { X:0, Y:10, Z:0, type: 'seater'},
             { X:0, Y:11, Z:0, type: 'seater'},
             { X:0, Y:12, Z:0, type: 'seater'},
-            { X:0, Y:13, Z:0, type: 'sleeper', spanY: 2},
+            { X:0, Y:13, Z:0, type: 'seater'},
+            { X:0, Y:14, Z:0, type: 'sleeper', spanY: 2},
             { X:1, Y:0, Z:0, type: 'seater'},
             { X:1, Y:1, Z:0, type: 'seater'},
             { X:1, Y:2, Z:0, type: 'seater'},
@@ -38,7 +39,8 @@ class FetchUtils {
             { X:1, Y:10, Z:0, type: 'seater'},
             { X:1, Y:11, Z:0, type: 'seater'},
             { X:1, Y:12, Z:0, type: 'seater'},
-            { X:1, Y:13, Z:0, type: 'sleeper', spanY: 2},
+            { X:1, Y:13, Z:0, type: 'seater'},
+            { X:1, Y:14, Z:0, type: 'sleeper', spanY: 2},
             { X:3, Y:0, Z:0, type: 'seater'},
             { X:3, Y:1, Z:0, type: 'seater'},
             { X:3, Y:2, Z:0, type: 'seater'},
@@ -52,7 +54,13 @@ class FetchUtils {
             { X:3, Y:10, Z:0, type: 'seater'},
             { X:3, Y:11, Z:0, type: 'seater'},
             { X:3, Y:12, Z:0, type: 'seater'},
-            { X:3, Y:13, Z:0, type: 'sleeper', spanY: 2},
+            { X:3, Y:13, Z:0, type: 'seater'},
+            { X:3, Y:14, Z:0, type: 'sleeper', spanY: 2},
+            { X:0, Y:14, Z:1, type: 'sleeper', spanY: 2},
+            { X:1, Y:14, Z:1, type: 'sleeper', spanY: 2},
+            { X:3, Y:14, Z:1, type: 'sleeper', spanY: 2},
+
+
         ];
     }
 }
