@@ -129,6 +129,13 @@ class BusSeatConfigView extends ViewBase {
         ctx.lineWidth = 3;
         hitCtx.fillRect(0,0, hitCanvas.width, hitCanvas.height);
 
+        if(zIndex === 0) {
+            const renderer = seatRendererFactory.getRenderer({ type : 'driver' });
+            const seatColors = ColorUtils.getSeatColor({seatType : 'driver'});
+            renderer.render(ctx, busGridSetting, {}, seatColors.defaultLine, seatColors.defaultFill, {upscaleDimentions : true});
+        }
+
+
         for(const seat of data) {
             const renderer = seatRendererFactory.getRenderer(seat);
             const seatColors = ColorUtils.getSeatColor({seatType : seat.type});
@@ -265,6 +272,9 @@ class SeaterSeatRenderer extends SeatRendererBase {
         ctx.fill();
         ctx.stroke();
 
+        ctx.strokeStyle = lineColor;
+        ctx.fillStyle = fillColor;
+
         ctx.beginPath();
         ctx.moveTo(backRestX, backRestY+backRestHeight);
         ctx.lineTo(backRestX, backRestY + backRestRadius);
@@ -278,6 +288,7 @@ class SeaterSeatRenderer extends SeatRendererBase {
         ctx.lineTo(seatX+seatRadius*2, seatY+seatRadius);
         ctx.arcTo(seatX+seatRadius*2, seatY, seatX+seatRadius, seatY, seatRadius);
         ctx.closePath();
+
         ctx.fill();
         ctx.stroke();
 
@@ -326,6 +337,9 @@ class SleeperSeatRenderer extends SeatRendererBase {
         ctx.fill();
         ctx.stroke();
 
+        ctx.strokeStyle = lineColor;
+        ctx.fillStyle = fillColor;
+
         ctx.beginPath();
         ctx.moveTo(pillowX+pillowRadius, pillowY);
         ctx.lineTo(pillowX+pillowWidth-pillowRadius, pillowY);
@@ -337,8 +351,64 @@ class SleeperSeatRenderer extends SeatRendererBase {
         ctx.lineTo(pillowX, pillowY+pillowRadius);
         ctx.arcTo(pillowX, pillowY, pillowX+pillowRadius, pillowY, pillowRadius);
         ctx.closePath();
+
         ctx.fill();
         ctx.stroke();
+    }
+}
+
+class DriverSeatRenderer extends SeatRendererBase {
+    constructor() {
+        super();
+    }
+
+    _render(ctx, gridSetting, seatData, lineColor, fillColor, {upscaleDimentions, clearCanvas}) {
+        const { seatX : x, seatY : y, seatWidth : boxWidth, seatHeight : boxHeight } = gridSetting.getDriverSeatDimentions(upscaleDimentions);
+        
+        if(clearCanvas) {
+            ctx.clearRect(x, y, boxWidth, boxHeight);
+        }
+        
+        // Define the parameters for the steering wheel
+        const size = Math.min(boxHeight, boxWidth)*0.38;
+        const centerX = x + boxWidth / 2;
+        const centerY = y + boxHeight / 2;
+        const outerRadius = size;
+        const innerRadius = size*0.25;
+        const originalLineWidth = ctx.lineWidth;
+        
+        ctx.lineWidth = originalLineWidth*2;
+        ctx.strokeStyle = lineColor;
+        ctx.fillStyle = fillColor;
+
+        
+        // Draw the outer rim
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, outerRadius, 0, 2 * Math.PI);
+        ctx.stroke();
+
+        // Draw the inner circle (hub)
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, innerRadius, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.stroke();
+
+        // Draw the spokes
+        const numberOfSpokes = 3;
+        for (let i = 0; i < numberOfSpokes; i++) {
+            const angle = (i * 2 * Math.PI) / numberOfSpokes;
+            const xStart = centerX + innerRadius * Math.cos(angle);
+            const yStart = centerY + innerRadius * Math.sin(angle);
+            const xEnd = centerX + outerRadius * Math.cos(angle);
+            const yEnd = centerY + outerRadius * Math.sin(angle);
+
+            ctx.beginPath();
+            ctx.moveTo(xStart, yStart);
+            ctx.lineTo(xEnd, yEnd);
+            ctx.stroke();
+        }
+
+        ctx.lineWidth = originalLineWidth;
     }
 }
 
@@ -357,6 +427,9 @@ class SeatRendererFactory {
                 case 'sleeper': 
                     renderer = new SleeperSeatRenderer();
                     break;
+                case 'driver':
+                    renderer = new DriverSeatRenderer();
+                    break;
                 default:
                     throw new ApplicationError(`Renderer not found for seat type : ${seat.type}`);
             }
@@ -369,12 +442,13 @@ class SeatRendererFactory {
 }
 
 class BusGridSetting {
-    constructor(maxXIndex, maxYIndex, {gridPaddingX = 15, gridPaddingY = 10, gridItemHeight = 35, gridItemWidth = 45, driverSeatPaddingY = 10, dpi = 3} = {}) {
+    constructor(maxXIndex, maxYIndex, {gridPaddingX = 15, gridPaddingY = 10, gridItemHeight = 35, gridItemWidth = 45, driverSeatPaddingY = 15, dpi = 3, driverSeatOrientation = 'left'} = {}) {
         this._maxXIndex = maxXIndex;
         this._maxYIndex = maxYIndex;
         this._gridPaddingX = gridPaddingX;
         this._gridPaddingY = gridPaddingY;
         this._gridItemHeight = gridItemHeight;
+        this._driverSeatOrientation = driverSeatOrientation;
         this._gridItemWidth = gridItemWidth;
         this._driverSeatPaddingY = driverSeatPaddingY;
 
@@ -386,6 +460,22 @@ class BusGridSetting {
         const seatY = ((this._maxYIndex-seatYIndex-seatSpanY+1)*this._gridItemHeight + this._gridPaddingY)*(upscaleDimentions?this._DPI:1);
         const seatWidth = (seatSpanX*this._gridItemWidth)*(upscaleDimentions?this._DPI:1); 
         const seatHeight = ((seatSpanY)*this._gridItemHeight)*(upscaleDimentions?this._DPI:1);
+
+        return { seatX, seatY, seatWidth, seatHeight };
+    }
+
+    getDriverSeatDimentions(upscaleDimentions = false) {
+        const seatWidth = this._gridItemWidth*(upscaleDimentions?this._DPI:1);
+        const seatHeight = this._gridItemHeight*(upscaleDimentions?this._DPI:1);
+        
+        let seatX;
+        if(this._driverSeatOrientation === 'left') {
+            seatX = this._gridPaddingX*(upscaleDimentions?this._DPI:1);
+        } else {
+            seatX = ((this._maxXIndex)*this._gridItemWidth + this._gridPaddingX)*(upscaleDimentions?this._DPI:1);
+        }
+
+        const seatY = ((this._maxYIndex+1)*this._gridItemHeight + this._gridPaddingY + this._driverSeatPaddingY)*(upscaleDimentions?this._DPI:1);
 
         return { seatX, seatY, seatWidth, seatHeight };
     }

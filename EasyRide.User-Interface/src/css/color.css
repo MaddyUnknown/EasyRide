@@ -12,6 +12,7 @@
 
     --white-color : #fff;
     --light-grey : #DDDDDD;
+    --light-grey-shade1 : #BBB;
     --dark-grey : #767676;
     --black-color : #000;
 
@@ -44,6 +45,11 @@
     --seat--sleeper--default-fill-color : rgba(0,0,0,0);
     --seat--sleeper--selected-line-color : #dfe1f0;
     --seat--sleeper--selected-fill-color : #5d6ab3;
+
+    --seat--driver--default-line-color : var(--light-grey-shade1);
+    --seat--driver--default-fill-color : var(--background-color);
+    --seat--driver--selected-line-color : rgba(0,0,0,0);
+    --seat--driver--selected-fill-color : rgba(0,0,0,0);
 
     --transition-time : 0.3s;
 }
