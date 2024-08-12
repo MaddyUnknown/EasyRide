@@ -232,6 +232,13 @@ class BusSeatConfigView extends ViewBase {
             this._deckSelectorHighlight.style.transform = `translateY(${zIndexPosition*100}%)`;
         }
 
+        const currentActiveCanvas = this._canvasContainer.querySelector(`canvas.active`);
+        if(currentActiveCanvas) {
+            currentActiveCanvas.classList.remove('active');
+        }
+        
+        const newActiveCanvas = this._canvasContainer.querySelector(`canvas[data-z-index="${newActive.textContent}"]`);
+        newActiveCanvas.classList.add('active');
     }
 
     _canvasClickHandler(e) {
@@ -247,9 +254,10 @@ class BusSeatConfigView extends ViewBase {
             return;
         }
         
+        const rect = canvas.getBoundingClientRect();
         const mousePos = {
-            x: e.clientX - canvas.offsetLeft,
-            y: e.clientY - canvas.offsetTop
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top
         };
         
         const hitCtx = deckConfig.hitCanvas.getContext('2d');
@@ -276,27 +284,29 @@ class BusSeatConfigView extends ViewBase {
     }
 
      _canvasHoverHandler(e) {
-        const canvas = e.target.closest('.component--bus-seat-config canvas');
-        if(!canvas) {
-            return;
-        }
-        
-
+         const canvas = e.target.closest('.component--bus-seat-config canvas');
+         if(!canvas) {
+             return;
+            }
+            
+            
         const deckConfig = this._seatConfigs?.deckConfigMap?.get(canvas.dataset.zIndex);
         if(!deckConfig) {
             return;
         }
-        
+
+        const rect = canvas.getBoundingClientRect();
         const mousePos = {
-            x: e.clientX - canvas.offsetLeft,
-            y: e.clientY - canvas.offsetTop
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top
         };
 
         const ctx = deckConfig.hitCanvas.getContext('2d');
         const pixel = ctx.getImageData(mousePos.x, mousePos.y, 1, 1).data;
         const color = { r: pixel[0] , g: pixel[1], b: pixel[2] };
-
+        
         const key = deckConfig.hitColorMap.keys().find(x => ColorUtils.isSimilar(color, x, deckConfig.colorGenerator.step*0.1));
+        this._canvasContainer.appendChild(deckConfig.hitCanvas);
         if(key) {
             canvas.style.cursor = 'pointer';
         } else {
