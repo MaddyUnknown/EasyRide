@@ -45,6 +45,28 @@ body {
     color: var(--primary-color);
 }
 
+.btn.btn.btn--primary.btn-full {
+    width: 100%;
+    padding: 1.2rem 3.2rem;
+}
+
+.btn.btn--primary, .btn.btn--primary:visited {
+    cursor: pointer;
+
+    color: var(--white-color);
+    background-color: var(--primary-color);
+
+    padding: 0.8rem 3.2rem;
+    border: none;
+    border-radius: 0.4rem;
+    font-size: 1.6rem;
+}
+
+.btn.btn--primary:hover, .btn.btn--primary:active {
+    color: var(--white-color);
+    background-color: var(--primary-color-shade1);
+}
+
 
 /********** FORM ERROR **********/
 .error-message--form {

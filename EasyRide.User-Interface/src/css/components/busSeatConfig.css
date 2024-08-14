@@ -1,5 +1,7 @@
 .component--bus-seat-config {
     display: flex;
+    min-height: 20rem;
+    flex-direction: column;
     align-items: center;
     gap: 0.8rem;
 }
@@ -8,7 +10,6 @@
     font-size: 1.4rem;
     position: relative;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
 }
@@ -32,6 +33,7 @@
 .component--bus-seat-config .highlight--deck-selector {
     position: absolute;
     top: 0;
+    left: 0;
     /* transform: translateY(100%); */
     content: "";
     display: inline-block;

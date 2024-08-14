@@ -167,20 +167,30 @@ class BusSeatConfigView extends ViewBase {
         const deckConfig = { hitCanvas, displayCanvas : canvas, hitColorMap : new Map(), colorGenerator };
 
         const { width : renderWidth , height : renderHeight } = busGridSetting.getBusDimentions({upscaleDimentions : true});
-        canvas.width = renderWidth; 
-        canvas.height = renderHeight;
+        // canvas.width = renderWidth; 
+        // canvas.height = renderHeight;
+
+        canvas.width = renderHeight; 
+        canvas.height = renderWidth;
 
         const { width, height } = busGridSetting.getBusDimentions();
-        canvas.style.width = `${width}px`;
-        canvas.style.height = `${height}px`;
-        hitCanvas.width = width;
-        hitCanvas.height = height;
+        // canvas.style.width = `${width}px`;
+        // canvas.style.height = `${height}px`;
+        // hitCanvas.width = width;
+        // hitCanvas.height = height;
+
+        canvas.style.width = `${height}px`;
+        canvas.style.height = `${width}px`;
+        hitCanvas.width = height;
+        hitCanvas.height = width;
 
         canvas.dataset.zIndex = zIndex;
 
 
         const ctx = canvas.getContext('2d');
         const hitCtx = hitCanvas.getContext('2d', { willReadFrequently : true });
+        ctx.setTransform(0, 1, -1, 0, renderHeight, 0);
+        hitCtx.setTransform(0, 1, -1, 0, height, 0);
         
         deckConfig.hitCanvasBackgroundColor = colorGenerator.getNextValue();
         hitCtx.fillStyle = ColorUtils.rgbStrFromObj(deckConfig.hitCanvasBackgroundColor);
@@ -229,7 +239,7 @@ class BusSeatConfigView extends ViewBase {
         newActive.classList.add('active');
 
         if(this._deckSelectorHighlight) {
-            this._deckSelectorHighlight.style.transform = `translateY(${zIndexPosition*100}%)`;
+            this._deckSelectorHighlight.style.transform = `translateX(${zIndexPosition*100}%)`;
         }
 
         const currentActiveCanvas = this._canvasContainer.querySelector(`canvas.active`);
