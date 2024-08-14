@@ -129,13 +129,13 @@ class BusSeatConfigView extends ViewBase {
         const deckConfigMap = new Map();
         const seatRendererFactory = new SeatRendererFactory();
         const busGridSetting = new BusGridSetting(maxXIndex, maxYIndex);
+        const canvasOrientation = this._getSeatCanvasOrientation();
 
         for(const z of deckIndexValues) {
-            const deckConfig = this._getDeckCanvas(z, data.filter(index => index.Z === z), busGridSetting, seatRendererFactory);
+            const deckConfig = this._getDeckCanvas(z, data.filter(index => index.Z === z), busGridSetting, seatRendererFactory, canvasOrientation);
             deckConfigMap.set(z.toString(), deckConfig);
             this._canvasContainer.appendChild(deckConfig.displayCanvas);
             // this._canvasContainer.appendChild(deckConfig.hitCanvas);
-
         }
 
         return {
@@ -143,6 +143,10 @@ class BusSeatConfigView extends ViewBase {
             busGridSetting,
             seatRendererFactory
         }
+    }
+
+    _getSeatCanvasOrientation() {
+        return CSSStyle.getCSSVariables('--bus-canvas-orientation', this._container) ?? 'vertical';
     }
 
     _getDeckSelectorHighlightElement() {
@@ -161,37 +165,43 @@ class BusSeatConfigView extends ViewBase {
         return element;
     }
 
-    _getDeckCanvas(zIndex, data, busGridSetting, seatRendererFactory) {
+    _getDeckCanvas(zIndex, data, busGridSetting, seatRendererFactory, seatOrientation = 'vertical') {
         const canvas = document.createElement('canvas');
         const hitCanvas = document.createElement('canvas');
         const colorGenerator = new DistinctRGBColorGenerator(500);
         const deckConfig = { hitCanvas, displayCanvas : canvas, hitColorMap : new Map(), colorGenerator };
-
+        
         const { width : renderWidth , height : renderHeight } = busGridSetting.getBusDimentions({upscaleDimentions : true});
-        // canvas.width = renderWidth; 
-        // canvas.height = renderHeight;
-
-        canvas.width = renderHeight; 
-        canvas.height = renderWidth;
-
         const { width, height } = busGridSetting.getBusDimentions();
-        // canvas.style.width = `${width}px`;
-        // canvas.style.height = `${height}px`;
-        // hitCanvas.width = width;
-        // hitCanvas.height = height;
-
-        canvas.style.width = `${height}px`;
-        canvas.style.height = `${width}px`;
-        hitCanvas.width = height;
-        hitCanvas.height = width;
-
+        
         canvas.dataset.zIndex = zIndex;
+        
+        if(seatOrientation === 'horizontal') { // invert canvas dimension when horizontal
+            canvas.width = renderHeight; 
+            canvas.height = renderWidth;
+
+            canvas.style.width = `${height}px`;
+            canvas.style.height = `${width}px`;
+            hitCanvas.width = height;
+            hitCanvas.height = width;
+        } else {
+            canvas.width = renderWidth; 
+            canvas.height = renderHeight;
+
+            canvas.style.width = `${width}px`;
+            canvas.style.height = `${height}px`;
+            hitCanvas.width = width;
+            hitCanvas.height = height;
+        }
 
 
         const ctx = canvas.getContext('2d');
         const hitCtx = hitCanvas.getContext('2d', { willReadFrequently : true });
-        ctx.setTransform(0, 1, -1, 0, renderHeight, 0);
-        hitCtx.setTransform(0, 1, -1, 0, height, 0);
+
+        if(seatOrientation === 'horizontal') { // martix tranformation to transpose the drawing space
+            ctx.setTransform(0, 1, -1, 0, renderHeight, 0);
+            hitCtx.setTransform(0, 1, -1, 0, height, 0);
+        }
         
         deckConfig.hitCanvasBackgroundColor = colorGenerator.getNextValue();
         hitCtx.fillStyle = ColorUtils.rgbStrFromObj(deckConfig.hitCanvasBackgroundColor);

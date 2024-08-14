@@ -19,11 +19,21 @@ class CSSStyle {
         return this._rootFontSizeCachePx;
     }
 
-    static getCSSVariables(variableName) {
+    static getCSSVariables(variableName, container = null) {
         if(!variableName || !variableName.startsWith('--')) {
             throw new InvalidArgumentError('cssVariableName', variableName);
         }
-        var style = getComputedStyle(document.body);
+
+        if(container && !(container instanceof HTMLElement) ) {
+            throw new InvalidArgumentError('container', container);
+        }
+
+        let element = document.body;
+        if(container) {
+            element = container;
+        }
+        
+        var style = getComputedStyle(element);
         return style.getPropertyValue(variableName);
     }
 }

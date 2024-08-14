@@ -4,6 +4,8 @@
     flex-direction: column;
     align-items: center;
     gap: 0.8rem;
+
+    --bus-canvas-orientation: horizontal;
 }
 
 .component--bus-seat-config .container--deck-selector {
