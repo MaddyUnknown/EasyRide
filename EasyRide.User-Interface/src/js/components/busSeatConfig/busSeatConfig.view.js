@@ -204,9 +204,9 @@ class BusSeatConfigView extends ViewBase {
         }
         
         deckConfig.hitCanvasBackgroundColor = colorGenerator.getNextValue();
-        hitCtx.fillStyle = ColorUtils.rgbStrFromObj(deckConfig.hitCanvasBackgroundColor);
-        hitCtx.lineWidth = 0.2*CSSStyle.RootFontSize;
         ctx.lineWidth = 0.3*CSSStyle.RootFontSize;
+        hitCtx.lineWidth = 0.2*CSSStyle.RootFontSize;
+        hitCtx.fillStyle = ColorUtils.rgbStrFromObj(deckConfig.hitCanvasBackgroundColor);
         hitCtx.fillRect(0,0, hitCanvas.width, hitCanvas.height);
 
         if(zIndex === 'L' || zIndex === 0) {
@@ -218,7 +218,7 @@ class BusSeatConfigView extends ViewBase {
 
         for(const seat of data) {
             const renderer = seatRendererFactory.getRenderer(seat);
-            const seatColors = ColorUtils.getSeatColor({seatType : seat.type});
+            const seatColors = ColorUtils.getSeatColor({seatType : seat.type, isBooked : seat.isBooked});
             renderer.render(ctx, busGridSetting, seat, seatColors.defaultLine, seatColors.defaultFill, {upscaleDimentions : true});
 
             const hitColor = colorGenerator.getNextValue();
@@ -287,7 +287,7 @@ class BusSeatConfigView extends ViewBase {
         const color = { r: pixel[0] , g: pixel[1], b: pixel[2] };
         const key = deckConfig.hitColorMap.keys().find(x => ColorUtils.isSimilar(color, x, deckConfig.colorGenerator.step*0.1));
 
-        if(key) {
+        if(key && !deckConfig.hitColorMap.get(key)?.data?.isBooked) {
             const seat = deckConfig.hitColorMap.get(key);
             const renderer = this._seatConfigs.seatRendererFactory.getRenderer(seat.data);
             const seatColors = ColorUtils.getSeatColor({seatType : seat.data.type});
@@ -329,7 +329,12 @@ class BusSeatConfigView extends ViewBase {
         const key = deckConfig.hitColorMap.keys().find(x => ColorUtils.isSimilar(color, x, deckConfig.colorGenerator.step*0.1));
         this._canvasContainer.appendChild(deckConfig.hitCanvas);
         if(key) {
-            canvas.style.cursor = 'pointer';
+            const isBooked = deckConfig.hitColorMap.get(key)?.data?.isBooked;
+            if(isBooked) {
+                canvas.style.cursor = 'not-allowed';
+            } else {
+                canvas.style.cursor = 'pointer';
+            }
         } else {
             canvas.style.cursor = 'default';
         }

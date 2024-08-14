@@ -43,31 +43,50 @@ class ColorUtils {
         return `rgb(${r},${g},${b})`;
     }
 
-    static getSeatColor({seatType}) {
-        const propertyName = `--seat--${seatType}`;
-        
+    static getSeatColor({seatType, isBooked=false} = {}) {
         if(!this._seatColorMap) {
             this._seatColorMap = new Map();
         }
+        
+        if(isBooked) {
+            const propertyName = `--seat--booked`;
+            if(this._seatColorMap.has(propertyName)) {
+                return this._seatColorMap.get(propertyName);
+            } else {
+                const defaultLine = CSSStyle.getCSSVariables(`${propertyName}--line-color`);
+                const defaultFill = CSSStyle.getCSSVariables(`${propertyName}--fill-color`);
 
-        if(this._seatColorMap.has(propertyName)) {
-            return this._seatColorMap.get(propertyName);
-        } else {
-            const defaultLine = CSSStyle.getCSSVariables(`${propertyName}--default-line-color`);
-            const defaultFill = CSSStyle.getCSSVariables(`${propertyName}--default-fill-color`);
-            const selectedLine = CSSStyle.getCSSVariables(`${propertyName}--selected-line-color`);
-            const selectedFill = CSSStyle.getCSSVariables(`${propertyName}--selected-fill-color`);
+                const value = {
+                    defaultLine,
+                    defaultFill
+                }
 
-            const value = {
-                defaultLine,
-                defaultFill,
-                selectedLine,
-                selectedFill
+                this._seatColorMap.set(propertyName, value);
+
+                return value;
             }
+        } else {
+            const propertyName = `--seat--${seatType}`;
 
-            this._seatColorMap.set(propertyName, value);
+            if(this._seatColorMap.has(propertyName)) {
+                return this._seatColorMap.get(propertyName);
+            } else {
+                const defaultLine = CSSStyle.getCSSVariables(`${propertyName}--default-line-color`);
+                const defaultFill = CSSStyle.getCSSVariables(`${propertyName}--default-fill-color`);
+                const selectedLine = CSSStyle.getCSSVariables(`${propertyName}--selected-line-color`);
+                const selectedFill = CSSStyle.getCSSVariables(`${propertyName}--selected-fill-color`);
 
-            return value;
+                const value = {
+                    defaultLine,
+                    defaultFill,
+                    selectedLine,
+                    selectedFill
+                }
+
+                this._seatColorMap.set(propertyName, value);
+
+                return value;
+            }
         }
     }
 }

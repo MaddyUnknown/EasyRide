@@ -35,7 +35,9 @@
     --message-warning--btn-close : #FBD64D;
     --message-warning--background : #FFFFF3;
 
-    
+    --seat--booked--line-color: var(--light-grey-shade1);
+    --seat--booked--fill-color: var(--light-grey-shade1);
+
     --seat--seater--default-line-color : #5d6ab3;
     --seat--seater--default-fill-color : rgba(0,0,0,0);
     --seat--seater--selected-line-color : #dfe1f0;
