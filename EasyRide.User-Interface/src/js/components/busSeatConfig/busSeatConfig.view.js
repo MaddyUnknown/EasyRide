@@ -23,14 +23,14 @@ class BusSeatConfigView extends ViewBase {
         this._canvasContainer = this._container.querySelector('.container--seat-canvas');
         this._bindDeckSelectorClickHandler = this._deckSelectorClickHandler.bind(this);
         this.$initateEventHandlerStore();
-        this.addEventHandler('deck-selector-clicked', this._bindDeckSelectorClickHandler);
+        this._deckSelectorContainer.addEventListener('click', this._bindDeckSelectorClickHandler);
 
         this._presenter.init();
     }
 
     destroy() {
         this._presenter.init();
-        this.removeEventHandler('deck-selector-clicked', this._bindDeckSelectorClickHandler);
+        this._deckSelectorContainer.removeEventListener('click', this._bindDeckSelectorClickHandler);
         this.$clearEventHandlerStore();
         this._bindDeckSelectorClickHandler = undefined;
         this._canvasContainer = undefined;
@@ -52,11 +52,7 @@ class BusSeatConfigView extends ViewBase {
         let wrapperHandler;
         switch(event) {
             case 'seat-selected':
-                wrapperHandler = (e) => { handler(); };
-                break;
-            case 'deck-selector-clicked':
                 wrapperHandler = (e) => { handler(e); };
-                this._deckSelectorContainer.addEventListener('click', wrapperHandler);
                 break;
             default:
                 throw new InvalidArgumentError('eventType', eventType);
@@ -65,24 +61,15 @@ class BusSeatConfigView extends ViewBase {
     }
 
     removeEventHandler(event, handler) {
-        const wrapperHandler = this.$getStoredWrapperEventHandler(event, handler);
+        // const wrapperHandler = this.$getStoredWrapperEventHandler(event, handler);
         this.$removeStoredEventHandler(event, handler);
-        
-        if(!wrapperHandler) {
-            return;
-        }
-
-        switch (event) {
-            case 'deck-selector-clicked':
-                this._deckSelectorContainer.removeEventListener('click', wrapperHandler);
-                break;
-        }
     }
 
     _dispatchSeatSelected(seatSelectedData) {
-        const funcMap = this.$getStoredWrapperEventHandler('validate-search');
+        const funcMap = this.$getStoredWrapperEventHandler('seat-selected');
+
         if(funcMap) {
-            for(const [, wrapperHandler] in funcMap.entries()) {
+            for(const [, wrapperHandler] of funcMap.entries()) {
                 wrapperHandler(seatSelectedData);
             }
         }
