@@ -1,3 +1,5 @@
+import { CSSStyle } from "../modules/cssStyleModule";
+
 class DistinctRGBColorGenerator {
     constructor(n) {
         const step = Math.max(1, Math.floor(Math.cbrt(256 ** 3 / n)));
@@ -51,10 +53,10 @@ class ColorUtils {
         if(this._seatColorMap.has(propertyName)) {
             return this._seatColorMap.get(propertyName);
         } else {
-            const defaultLine = this._getColorProperty(`${propertyName}--default-line-color`);
-            const defaultFill = this._getColorProperty(`${propertyName}--default-fill-color`);
-            const selectedLine = this._getColorProperty(`${propertyName}--selected-line-color`);
-            const selectedFill = this._getColorProperty(`${propertyName}--selected-fill-color`);
+            const defaultLine = CSSStyle.getCSSVariables(`${propertyName}--default-line-color`);
+            const defaultFill = CSSStyle.getCSSVariables(`${propertyName}--default-fill-color`);
+            const selectedLine = CSSStyle.getCSSVariables(`${propertyName}--selected-line-color`);
+            const selectedFill = CSSStyle.getCSSVariables(`${propertyName}--selected-fill-color`);
 
             const value = {
                 defaultLine,
@@ -67,11 +69,6 @@ class ColorUtils {
 
             return value;
         }
-    }
-
-    static _getColorProperty(propertyName) {
-        var style = getComputedStyle(document.body);
-        return style.getPropertyValue(propertyName);
     }
 }
 

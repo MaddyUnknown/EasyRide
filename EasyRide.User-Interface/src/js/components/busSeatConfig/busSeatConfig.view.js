@@ -4,6 +4,7 @@ import { BusSeatConfigPresenter } from "./busSeatConfig.presenter";
 import { DistinctRGBColorGenerator, ColorUtils } from "../../utils/colorUtils";
 import { ApplicationError } from "../../modules/errorModule";
 import { Animation } from "../../modules/animationModule";
+import { CSSStyle } from "../../modules/cssStyleModule";
 
 class BusSeatConfigView extends ViewBase {
 
@@ -194,8 +195,8 @@ class BusSeatConfigView extends ViewBase {
         
         deckConfig.hitCanvasBackgroundColor = colorGenerator.getNextValue();
         hitCtx.fillStyle = ColorUtils.rgbStrFromObj(deckConfig.hitCanvasBackgroundColor);
-        hitCtx.lineWidth = 2;
-        ctx.lineWidth = 3;
+        hitCtx.lineWidth = 0.2*CSSStyle.RootFontSize;
+        ctx.lineWidth = 0.3*CSSStyle.RootFontSize;
         hitCtx.fillRect(0,0, hitCanvas.width, hitCanvas.height);
 
         if(zIndex === 'L' || zIndex === 0) {
@@ -554,7 +555,7 @@ class SeatRendererFactory {
 }
 
 class BusGridSetting {
-    constructor(maxXIndex, maxYIndex, {gridPaddingX = 15, gridPaddingY = 10, gridItemHeight = 35, gridItemWidth = 45, driverSeatPaddingY = 15, dpi = 3, driverSeatOrientation = 'left'} = {}) {
+    constructor(maxXIndex, maxYIndex, {gridPaddingX = 1.5, gridPaddingY = 1, gridItemHeight = 3.5, gridItemWidth = 4.5, driverSeatPaddingY = 1.5, dpi = 3, driverSeatOrientation = 'left'} = {}) {
         this._maxXIndex = maxXIndex;
         this._maxYIndex = maxYIndex;
         this._gridPaddingX = gridPaddingX;
@@ -568,33 +569,39 @@ class BusGridSetting {
     }
 
     getSeatDimentions(seatXIndex, seatYIndex, seatSpanX = 1, seatSpanY = 1, upscaleDimentions = false) {
-        const seatX = (seatXIndex*this._gridItemWidth + this._gridPaddingX)*(upscaleDimentions?this._DPI:1);
-        const seatY = ((this._maxYIndex-seatYIndex-seatSpanY+1)*this._gridItemHeight + this._gridPaddingY)*(upscaleDimentions?this._DPI:1);
-        const seatWidth = (seatSpanX*this._gridItemWidth)*(upscaleDimentions?this._DPI:1); 
-        const seatHeight = ((seatSpanY)*this._gridItemHeight)*(upscaleDimentions?this._DPI:1);
+        const rootFontSize = CSSStyle.RootFontSize;
+
+        const seatX = (seatXIndex*this._gridItemWidth + this._gridPaddingX)*(upscaleDimentions?this._DPI:1)*rootFontSize;
+        const seatY = ((this._maxYIndex-seatYIndex-seatSpanY+1)*this._gridItemHeight + this._gridPaddingY)*(upscaleDimentions?this._DPI:1)*rootFontSize;
+        const seatWidth = (seatSpanX*this._gridItemWidth)*(upscaleDimentions?this._DPI:1)*rootFontSize; 
+        const seatHeight = ((seatSpanY)*this._gridItemHeight)*(upscaleDimentions?this._DPI:1)*rootFontSize;
 
         return { seatX, seatY, seatWidth, seatHeight };
     }
 
     getDriverSeatDimentions(upscaleDimentions = false) {
-        const seatWidth = this._gridItemWidth*(upscaleDimentions?this._DPI:1);
-        const seatHeight = this._gridItemHeight*(upscaleDimentions?this._DPI:1);
+        const rootFontSize = CSSStyle.RootFontSize;
+
+        const seatWidth = this._gridItemWidth*(upscaleDimentions?this._DPI:1)*rootFontSize;
+        const seatHeight = this._gridItemHeight*(upscaleDimentions?this._DPI:1)*rootFontSize;
         
         let seatX;
         if(this._driverSeatOrientation === 'left') {
-            seatX = this._gridPaddingX*(upscaleDimentions?this._DPI:1);
+            seatX = this._gridPaddingX*(upscaleDimentions?this._DPI:1)*rootFontSize;
         } else {
-            seatX = ((this._maxXIndex)*this._gridItemWidth + this._gridPaddingX)*(upscaleDimentions?this._DPI:1);
+            seatX = ((this._maxXIndex)*this._gridItemWidth + this._gridPaddingX)*(upscaleDimentions?this._DPI:1)*rootFontSize;
         }
 
-        const seatY = ((this._maxYIndex+1)*this._gridItemHeight + this._gridPaddingY + this._driverSeatPaddingY)*(upscaleDimentions?this._DPI:1);
+        const seatY = ((this._maxYIndex+1)*this._gridItemHeight + this._gridPaddingY + this._driverSeatPaddingY)*(upscaleDimentions?this._DPI:1)*rootFontSize;
 
         return { seatX, seatY, seatWidth, seatHeight };
     }
 
     getBusDimentions(upscaleDimentions = false) {
-        const width = ((this._maxXIndex+1)*this._gridItemWidth + this._gridPaddingX*2)*(upscaleDimentions?this._DPI:1); 
-        const height = ((this._maxYIndex+2)*this._gridItemHeight + this._gridPaddingY*2 + this._driverSeatPaddingY)*(upscaleDimentions?this._DPI:1);
+        const rootFontSize = CSSStyle.RootFontSize;
+
+        const width = ((this._maxXIndex+1)*this._gridItemWidth + this._gridPaddingX*2)*(upscaleDimentions?this._DPI:1)*rootFontSize; 
+        const height = ((this._maxYIndex+2)*this._gridItemHeight + this._gridPaddingY*2 + this._driverSeatPaddingY)*(upscaleDimentions?this._DPI:1)*rootFontSize;
 
         return {width, height};
     }
