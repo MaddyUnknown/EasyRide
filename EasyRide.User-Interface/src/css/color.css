@@ -12,8 +12,11 @@
 
     --white-color : #fff;
     --light-grey : #DDDDDD;
+    --light-grey-shade1 : #BBB;
     --dark-grey : #767676;
     --black-color : #000;
+
+    --overlay-color : rgb(0, 0, 0, 0.75);
 
     --application-red : #EE0000;
 
@@ -31,6 +34,24 @@
     --message-warning--light : #ECB971;
     --message-warning--btn-close : #FBD64D;
     --message-warning--background : #FFFFF3;
+
+    --seat--booked--line-color: var(--light-grey-shade1);
+    --seat--booked--fill-color: var(--light-grey-shade1);
+
+    --seat--seater--default-line-color : #5d6ab3;
+    --seat--seater--default-fill-color : rgba(0,0,0,0);
+    --seat--seater--selected-line-color : #dfe1f0;
+    --seat--seater--selected-fill-color : #5d6ab3;
+
+    --seat--sleeper--default-line-color : #5d6ab3;
+    --seat--sleeper--default-fill-color : rgba(0,0,0,0);
+    --seat--sleeper--selected-line-color : #dfe1f0;
+    --seat--sleeper--selected-fill-color : #5d6ab3;
+
+    --seat--driver--default-line-color : var(--light-grey-shade1);
+    --seat--driver--default-fill-color : var(--background-color);
+    --seat--driver--selected-line-color : rgba(0,0,0,0);
+    --seat--driver--selected-fill-color : rgba(0,0,0,0);
 
     --transition-time : 0.3s;
 }

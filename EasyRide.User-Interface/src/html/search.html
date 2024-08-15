@@ -1,4 +1,62 @@
 <div class="panel--search">
+    <div class="overlay--bus-seat-selection">
+        <div class="bus-seat-selection">
+            <div class="bus-seat-selection-title">
+                <p class="bus-seat-selection-header">Select Seats</p>
+                <button class="btn--close-bus-seat-selection">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="bus-seat-selection-body">
+                <div class="bus-seat-selection-error-message hidden"></div>
+                <div class="bus-seat-selection-body-main">
+                    <section class="bus-seat-selection-details">
+                        <div class="bus-seat-selection-details-section-group">
+                            <div class="label--seat-selection-details label--details-source-stop">From: </div>
+                            <div class="value--seat-selection-details details-source-stop">Kolkata</div>
+                        </div>
+                        <div class="bus-seat-selection-details-section-group">
+                            <div class="label--seat-selection-details label--details-destination-stop">To: </div>
+                            <div class="value--seat-selection-details details-destination-stop">Siliguri</div>
+                        </div>
+                        <div class="bus-seat-selection-details-section-group">
+                            <div class="label--seat-selection-details label--details-seat-selected">Seat Selected: </div>
+                            <div class="value--seat-selection-details details-seats-selected">B2, B3, A3</div>
+                        </div>
+                        <div class="bus-seat-selection-details-section-group">
+                            <div class="label--seat-selection-details label--details-cost-net-total">Net Total: </div>
+                            <div class="value--seat-selection-details">
+                                <span class="cost-net-total-currency">INR</span>
+                                <span class="details-cost-net-total">1345</span>
+                            </div>
+                        </div>
+                        <div class="bus-seat-selection-details-section-group">
+                            <div class="label--seat-selection-details label--details-cost-gst">GST: </div>
+                            <div class="value--seat-selection-details">
+                                <span class="cost-gst-currency">INR</span>
+                                <span class="details-cost-gst">600</span>
+                            </div>
+                        </div>
+                        <div class="bus-seat-selection-details-section-group">
+                            <div class="label--seat-selection-details label--details-cost-total">Total: </div>
+                            <div class="value--seat-selection-details">
+                                <span class="cost-total-currency">INR</span>
+                                <span class="details-cost-total">1945</span>
+                            </div>
+                        </div>
+                    </section>
+                    <div class="bus-seat-selection-lower-container">
+                        <div class="bus-seat-selection-canvas">
+                            <include src="html/components/busSeatConfig.html"></include>
+                        </div>
+                    </div>
+                    <div class="bus-seat-selection-book-seat-container">
+                        <button class="btn btn--primary btn-full btn--book-seat">Book Seats</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <section class="section--search-bar">
         <div class="container container--search-bar">
             <include src="html/components/searchBarComponent.html"></include>

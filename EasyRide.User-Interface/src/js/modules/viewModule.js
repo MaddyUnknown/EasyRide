@@ -6,6 +6,35 @@ class ViewType {
 class ViewBase {
     static $TYPE = ViewType.COMPONENT;
 
+    $initateEventHandlerStore() {
+        this._eventHandlerStore = new Map();
+    }
+
+    $clearEventHandlerStore() {
+        this._eventHandlerStore.clear();
+        this._eventHandlerStore = undefined;
+    }
+
+    $storeEventHandler(event, originalHandler, wrapperHandler) {
+        if(!this._eventHandlerStore.has(event)) {
+            this._eventHandlerStore.set(event, new Map());
+        }
+
+        this._eventHandlerStore.get(event).set(originalHandler, wrapperHandler);
+    }
+
+    $getStoredWrapperEventHandler(event, originalHandler = null) {
+        if(originalHandler === null) {
+            return this._eventHandlerStore.get(event);
+        } else {
+            return this._eventHandlerStore.get(event)?.get(originalHandler)
+        }
+    }
+
+    $removeStoredEventHandler(event, originalHandler) {
+        this._eventHandlerStore.get(event)?.delete(originalHandler);
+    }
+
     init() {
 
     }

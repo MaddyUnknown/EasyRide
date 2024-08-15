@@ -94,3 +94,130 @@
     font-size: 1.4rem;
     color: var(--dark-grey);
 }
+
+/********** SEAT SELECTOR OVERLAY **********/
+.panel--search .overlay--bus-seat-selection {
+    pointer-events: none;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    top : 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--overlay-color);
+    opacity: 0;
+    transition: opacity var(--transition-time);
+}
+
+.panel--search .overlay--bus-seat-selection.show {
+    pointer-events: auto;
+    opacity: 1;
+}
+
+.panel--search .bus-seat-selection {
+    width: 100%;
+    max-width: 80rem;
+    margin: 2.4rem;
+    padding: 1.6rem 3.8rem;
+    border-radius: 0.4rem;
+    background-color: var(--background-color);
+}
+
+.panel--search .bus-seat-selection-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.4rem;
+}
+
+.panel--search .bus-seat-selection-header {
+    font-size: 2rem;
+}
+
+.panel--search .btn--close-bus-seat-selection {
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0;
+    padding: 0;
+    border: none;
+    background-color: inherit;
+
+    font-size: 1.8rem;
+
+    transition: all var(--transition-time);
+}
+
+.panel--search .btn--close-bus-seat-selection > ion-icon {
+    --ionicon-stroke-width : 3.6rem;
+}
+
+.panel--search .bus-seat-selection-details {
+    margin-bottom: 2.4rem;
+    padding: 1.2rem 2.4rem;
+    
+    border: 0.1rem solid var(--light-grey);
+    border-radius: 0.8rem;
+}
+
+.panel--search .bus-seat-selection-body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 6.4rem;
+}
+
+.panel--search .bus-seat-selection-error-message {
+    font-size: 1.4rem;
+    color: var(--dark-grey);
+}
+
+.panel--search .bus-seat-selection-error-message.hidden {
+    display: none;
+}
+
+.panel--search .bus-seat-selection-body-main.hidden {
+    display: none;
+}
+
+.panel--search .bus-seat-selection-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.8rem;
+}
+
+.panel--search .bus-seat-selection-lower-container {
+    margin-bottom: 3.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.panel--search .label--seat-selection-details {
+    margin-bottom: 0.4rem;
+    font-size: 1.4rem;
+    color: var(--dark-grey);
+}
+
+.panel--search .value--seat-selection-details {
+    font-size: 1.6rem;
+}
+
+.panel--search .bus-seat-selection-lower-container {
+    display: flex;
+    gap: 1.2rem;
+    width: 100%;
+}
+
+.panel--search .bus-seat-selection-legend {
+    flex-grow: 1;
+    padding: 1.2rem 2.4rem;
+    border: 0.1rem solid var(--light-grey);
+    border-radius: 0.8rem;
+}

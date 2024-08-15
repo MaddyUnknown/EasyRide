@@ -1,0 +1,74 @@
+.component--bus-seat-config {
+    display: flex;
+    /* min-height: 20rem; */
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+
+    --bus-canvas-orientation: horizontal;
+}
+
+.component--bus-seat-config .container--deck-selector {
+    font-size: 1.4rem;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.component--bus-seat-config .btn--deck-selector {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    padding: 0.8rem;
+    width: 2.4rem;
+    height: 2.4rem;
+    transition: color calc(var(--transition-time)*0.4);
+}
+
+.component--bus-seat-config .btn--deck-selector.active {
+    color: var(--white-color);
+}
+
+.component--bus-seat-config .highlight--deck-selector {
+    position: absolute;
+    top: 0;
+    left: 0;
+    /* transform: translateY(100%); */
+    content: "";
+    display: inline-block;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 1000px;
+    background-color: var(--primary-color);
+    transition: transform calc(var(--transition-time)*0.4);
+}
+
+/* .component--bus-seat-config.scrollable {
+    padding-bottom: 4px;
+    overflow-x: scroll;
+} */
+
+.component--bus-seat-config .container--seat-canvas {
+    position: relative;
+}
+
+.component--bus-seat-config canvas {
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border: 0.1rem solid var(--light-grey);
+    border-radius: 0.8rem;
+    -webkit-tap-highlight-color: transparent; /* Prevent highlighting on tap */
+    opacity: 0;
+    transition: opacity calc(var(--transition-time)*0.4);
+}
+
+.component--bus-seat-config canvas.active {
+    pointer-events: auto;
+    position: relative;
+    opacity: 1;
+}

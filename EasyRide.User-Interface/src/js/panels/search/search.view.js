@@ -2,16 +2,19 @@ import html from "bundle-text:../../../html/search.html";
 import searchItemTemplate from "bundle-text:../../../html/templates/searchItem.html";
 
 import { SearchBoxView } from "../../components/searchBox/searchBox.view";
+import { BusSeatConfigView } from "../../components/busSeatConfig/busSeatConfig.view";
 import { PanelViewBase } from "../../modules/viewModule";
 import { SearchPanelPresenter } from "./search.presenter";
 import { DateUtils } from "../../utils/dateUtils";
 import { Animation } from "../../modules/animationModule";
+import { InvalidArgumentError } from "../../modules/errorModule";
 
 class SearchPanelView extends PanelViewBase {
     constructor() {
         super();
         this._presenter = new SearchPanelPresenter(this);
-        this._searchBox = new SearchBoxView();
+        this.searchBox = new SearchBoxView();
+        this.busSeatConfig = new BusSeatConfigView();
     }
 
     static get $PANEL_TEMPLATE() {
@@ -27,43 +30,85 @@ class SearchPanelView extends PanelViewBase {
 
     init() {
         this._container = document.querySelector('.panel--search');
-        this._searchResultContainer = this._container.querySelector('.section--search-result');
-        this._searchResultMessageContainer = this._container.querySelector('.search-result-message');
-        this._searchResultList = this._searchResultContainer.querySelector('.search-result-list');
-        this._resolveFilterSectionScrollVisibality();
+        if(!this._container) {
+            throw new InvalidArgumentError('SearchPanelContainer', this._container);
+        }
+
+        this._initElements();
+        this.$initateEventHandlerStore();
         
-        this._addFilterSectionResizeHandler();
-        this._searchBox.init();
+        this._resolveFilterSectionScrollVisibality();
+        window.addEventListener('resize', this._resolveFilterSectionScrollVisibality.bind(this));
+        this.searchBox.init();
+        this.busSeatConfig.init();
         this._presenter.init();
     }
 
     destroy() {
         this._presenter.destroy();
-        this._searchBox.destroy();
-        this._removeFilterSectionResizeHandler();
+        this.searchBox.destroy();
+        this.busSeatConfig.destroy();
+        window.removeEventListener('resize', this._resolveFilterSectionScrollVisibality.bind(this));
+
+        this.$clearEventHandlerStore();
     }
 
-    addSearchBusHandler(handler) {
-        this._searchBox.addSearchHandler(handler);
+    _initElements() {
+        this._searchResultContainer = this._container.querySelector('.section--search-result');
+        this._searchResultMessageContainer = this._container.querySelector('.search-result-message');
+        this._searchResultList = this._searchResultContainer.querySelector('.search-result-list');
+        this._initSeatSelectorElements();
     }
 
-    removeSearchBusHandler(handler) {
-        this._searchBox.removeSearchHandler(handler);
+    _initSeatSelectorElements() {
+        this._busSeatSelector = {};
+        this._busSeatSelector.container = this._container.querySelector('.overlay--bus-seat-selection');
+        this._busSeatSelector.component = this._busSeatSelector.container.querySelector('.bus-seat-selection');
+        this._busSeatSelector.closeBtn = this._busSeatSelector.component.querySelector('.btn--close-bus-seat-selection');
+        this._busSeatSelector.body = this._busSeatSelector.component.querySelector('.bus-seat-selection-body');
+
+        this._busSeatSelector.bodyMainContent = this._busSeatSelector.component.querySelector('.bus-seat-selection-body-main');
+        this._busSeatSelector.message = this._busSeatSelector.component.querySelector('.bus-seat-selection-error-message');
+        this._busSeatSelector.sourceStop = this._busSeatSelector.body.querySelector('.details-source-stop');
+        this._busSeatSelector.destStop = this._busSeatSelector.body.querySelector('.details-destination-stop');
+        this._busSeatSelector.seatSelected = this._busSeatSelector.body.querySelector('.details-seats-selected');
+        this._busSeatSelector.netTotal = this._busSeatSelector.body.querySelector('.details-cost-net-total');
+        this._busSeatSelector.gst = this._busSeatSelector.body.querySelector('.details-cost-gst');
+        this._busSeatSelector.total = this._busSeatSelector.body.querySelector('.details-cost-total');
+
+        this._busSeatSelector.bookSeatBtn = this._busSeatSelector.body.querySelector('.btn--book-seat');
     }
 
-    get searchData() {
-        return this._searchBox.formData;
+    addLoadingAnimation({ container }) {
+        switch(container) {
+            case 'search-result':
+                return Animation.animateRippleLoading(this._searchResultContainer);
+            case 'seat-selection-body':
+                return Animation.animateRippleLoading(this._busSeatSelector.body, {zIndex : 1000, align : 'center' });
+            default:
+                throw new InvalidArgumentError('container', container);
+        }
     }
 
-    set searchData(value) {
-        this._searchBox.formData = value;
+    showSeatConfigScreen() {
+        this._busSeatSelector.container.classList.add('show');
+    }
+
+    hideSeatConfigScreen() {
+        this._busSeatSelector.container.classList.remove('show');
+    }
+
+    setSeatConfigErrorMessage({message}) {
+        const { message: msgElem, bodyMainContent } = this._busSeatSelector;
+        msgElem.textContent = message || '';
+        msgElem.classList.toggle('hidden', !message);
+        bodyMainContent.classList.toggle('hidden', !!message);
     }
 
     setSearchResultData(searchResultList) {
         this._searchResultList.innerHTML = '';
         if(searchResultList.length === 0) {
             this._searchResultMessageContainer.textContent = 'No bus available!';
-            return;
         } else {
             this._searchResultMessageContainer.textContent = '';
             for(const searchItem of searchResultList) {
@@ -72,23 +117,67 @@ class SearchPanelView extends PanelViewBase {
         }
     }
 
-    addLoadingAnimationToSearchResult() {
-        this._stopSearchLoadingAnimation = Animation.animateRippleLoading(this._searchResultContainer);
-    }
+    setSeatSelectionDetails({ sourceStop, destStop, seatsSelected, netTotal, gst, total } = {}) {
+        const {
+            sourceStop: srcElem,
+            destStop: destElem,
+            seatSelected,
+            netTotal: netElem,
+            gst: gstElem,
+            total: totalElem,
+        } = this._busSeatSelector;
 
-    removeLoadingAnimationFromSearchResult() {
-        if(this._stopSearchLoadingAnimation) {
-            this._stopSearchLoadingAnimation();
-            this._searchLoadingAnimation = undefined;
+        if (sourceStop !== undefined) srcElem.textContent = sourceStop;
+        if (destStop !== undefined) destElem.textContent = destStop;
+        if (seatsSelected !== undefined) seatSelected.textContent = [...seatsSelected].join(', ');
+        if (netTotal !== undefined) netElem.textContent = netTotal;
+        if (gst !== undefined) gstElem.textContent = gst;
+        if (total !== undefined) totalElem.textContent = total;
+        
+    } 
+
+    addEventHandler(event, handler) {
+        let wrapperHandler;
+        switch(event) {
+            case 'seat-view':
+                wrapperHandler = (e) => {
+                    const viewSeatBtn = e.target.closest('.btn--view-seats');
+                    if(viewSeatBtn) {
+                        const busContainer = viewSeatBtn.closest('.search-result-item');
+                        if(busContainer) {
+                            handler({ busIndex : busContainer.dataset.index });
+                        } else {
+                            console.error('Bus data not found');
+                        }
+                    }
+                }
+                this._container.addEventListener('click', wrapperHandler);
+                break;
+            case 'close-seat-view':
+                wrapperHandler = (e) => { handler(); }
+                this._busSeatSelector.closeBtn.addEventListener('click', wrapperHandler);
+                break;
+            default:
+                throw new InvalidArgumentError('eventType', eventType);
         }
+        this.$storeEventHandler(event, handler, wrapperHandler);
     }
 
-    _addFilterSectionResizeHandler() {
-        window.addEventListener('resize', this._resolveFilterSectionScrollVisibality.bind(this));
-    }
+    removeEventHandler(event, handler) {
+        const wrapperHandler = this.$getStoredWrapperEventHandler(event, handler);
+        this.$removeStoredEventHandler(event, handler);
+        if(!wrapperHandler) {
+            return;
+        }
 
-    _removeFilterSectionResizeHandler() {
-        window.removeEventListener('resize', this._resolveFilterSectionScrollVisibality.bind(this));
+        switch (event) {
+            case 'seat-view':
+                this._container.removeEventListener('wrapperHandler', wrapperHandler);
+                break;
+            case 'close-seat-view':
+                this._busSeatSelector.closeBtn.removeEventListener('click', wrapperHandler);
+                break;
+        }
     }
 
     _resolveFilterSectionScrollVisibality() {

@@ -3,6 +3,7 @@
 @import "./animation.css";
 
 /********** COMPONENTS **********/
+@import "./components/busSeatConfig.css";
 @import "./components/header.css";
 @import "./components/searchBox.css";
 

@@ -7,7 +7,6 @@ class SearchBoxView extends ViewBase {
     constructor() {
         super();
         this._presenter = new SearchBoxPresenter(this);
-        this.CUSTOM_VALID_SEARCH_EVENT = 'custom-validatedSearch';
     }
 
     init() {
@@ -18,12 +17,12 @@ class SearchBoxView extends ViewBase {
 
         this._initElements();
         this._initErrorContainers();
-        this._registeredHandlers = new Map();
         this._inputIdToProperty = {
             'boarding-point': 'boardingPoint',
             'dropping-point': 'droppingPoint',
             'boarding-date': 'boardingDate',
         };
+        this.$initateEventHandlerStore();
 
         this._presenter.init();
     }
@@ -31,10 +30,10 @@ class SearchBoxView extends ViewBase {
     destroy() {
         this._presenter.destroy();
 
+        this.$clearEventHandlerStore();
         this._container = undefined;
         this._errorContainers = undefined;
         this._elements = undefined;
-        this._registeredHandlers = undefined;
         this._inputIdToProperty = undefined;
     }
 
@@ -56,7 +55,7 @@ class SearchBoxView extends ViewBase {
         ]);
     }
 
-    get formData() {
+    get searchData() {
         const { boardingPointInput, droppingPointInput, boardingDateInput } = this._elements;
         return {
             boardingPoint: boardingPointInput.value,
@@ -65,14 +64,14 @@ class SearchBoxView extends ViewBase {
         };
     }
 
-    set formData(value) {
+    set searchData(value) {
         const { boardingPoint, droppingPoint, boardingDate } = value;
         this._elements.boardingPointInput.value = boardingPoint;
         this._elements.droppingPointInput.value = droppingPoint;
         this._elements.boardingDateInput.value = boardingDate;
     }
 
-    $setErrorMessages(errorMessages) {
+    setErrorMessages(errorMessages) {
         for (const [key, container] of this._errorContainers.entries()) {
             if(errorMessages[key] !== undefined) {
                 this._setErrorMessage(container, errorMessages[key]);
@@ -90,77 +89,80 @@ class SearchBoxView extends ViewBase {
         }
     }
 
-    $animateErrorsShake() {
+    animateErrorsShake() {
         this._errorContainers.forEach(container => {
             Animation.animateShake(container);
         });
     }
 
-    addSearchHandler(handler) {
-        this._elements.searchForm.addEventListener(this.CUSTOM_VALID_SEARCH_EVENT, handler);
+    dispatchValidatedSearch(searchData) {
+        const funcMap = this.$getStoredWrapperEventHandler('validated-search');
+        if(funcMap) {
+            for(const [, wrapperHandler] of funcMap.entries()) {
+                wrapperHandler(searchData);
+            }
+        }
     }
 
-    removeSearchHandler(handler) {
-        this._elements.searchForm.removeEventListener(this.CUSTOM_VALID_SEARCH_EVENT, handler);
-    }
-
-    $dispatchValidatedSearch(eventData) {
-        this._elements.searchForm.dispatchEvent(new CustomEvent(this.CUSTOM_VALID_SEARCH_EVENT, { detail : eventData }));
-    }
-
-    $addEventHandler(eventType, handler) {
-        let event, element, handlerFunction;
+    addEventHandler(event, handler) {
+        let wrapperHandler;
         const { searchForm, toggleLocationBtn } = this._elements;
-
-        switch (eventType) {
-            case SearchBoxEventType.SEARCH_CLICK:
-                event = 'submit';
-                element = searchForm;
-                handlerFunction = (e) => { e.preventDefault(); handler(); };
+        switch (event) {
+            case 'search':
+                wrapperHandler = (e) => { e.preventDefault(); handler(); };
+                searchForm.addEventListener('submit', wrapperHandler);
                 break;
-            case SearchBoxEventType.INPUT_FOCUS_OUT:
-                event = 'focusout';
-                element = searchForm;
-                handlerFunction = (e) => {
+            case 'validated-search':
+                wrapperHandler = (searchData) => { handler(searchData); };
+                break;
+            case 'input-focus-out':
+                wrapperHandler = (e) => {
                     const elementId = e.target.id;
+                    console.log(this._inputIdToProperty);
+                    // debugger;
                     if (this._inputIdToProperty[elementId]) {
                         const eventData = {};
                         eventData[this._inputIdToProperty[elementId]] = true;
                         handler(eventData);
                     }
                 };
+                searchForm.addEventListener('focusout', wrapperHandler);
                 break;
-            case SearchBoxEventType.TOGGLE_SOURCE_DESTINATION_CLICK:
-                event = 'click';
-                element = toggleLocationBtn;
-                handlerFunction = (e) => { e.preventDefault(); handler(); };
+            case 'toggle-button-click':
+                wrapperHandler = (e) => { e.preventDefault(); handler(); };
+                toggleLocationBtn.addEventListener('click', wrapperHandler);
                 break;
             default:
                 throw new InvalidArgumentError('eventType', eventType);
         }
-        this._registerHandler(eventType, element, event, handlerFunction);
+
+        this.$storeEventHandler(event, handler, wrapperHandler);
     }
 
-    _registerHandler(eventType, element, event, handler) {
-        if (!this._registeredHandlers.has(eventType)) {
-            this._registeredHandlers.set(eventType, { element, event, handlers: [] });
+    removeEventHandler(event, handler) {
+        const wrapperHandler = this.$getStoredWrapperEventHandler(event, handler);
+        this.$removeStoredEventHandler(event, handler);
+        
+        if(!wrapperHandler) {
+            return;
         }
-        this._registeredHandlers.get(eventType).handlers.push(handler);
-        element.addEventListener(event, handler);
-    }
 
-    $removeAllEventHandlers() {
-        this._registeredHandlers.forEach(({element, event, handlers}) => {
-            handlers.forEach(handler => element.removeEventListener(event, handler));
-        });
-        this._registeredHandlers.clear();
+        const { searchForm, toggleLocationBtn } = this._elements;
+        switch (event) {
+            case 'search':
+                searchForm.removeEventListener('submit', wrapperHandler);
+                break;
+            case 'validated-search':
+                break;
+            case 'input-focus-out':
+                searchForm.removeEventListener('focusout', wrapperHandler);
+                break;
+            case 'toggle-button-click':
+                toggleLocationBtn.removeEventListener('click', wrapperHandler);
+                break;
+        }
+
     }
 }
 
-class SearchBoxEventType {
-    static SEARCH_CLICK = "SearchClick";
-    static INPUT_FOCUS_OUT = "InputFocusOut";
-    static TOGGLE_SOURCE_DESTINATION_CLICK = "ToggleSourceDestinationClick";
-}
-
-export { SearchBoxView, SearchBoxEventType };
+export { SearchBoxView };
