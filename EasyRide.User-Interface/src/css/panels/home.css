@@ -1,3 +1,28 @@
-.panel--home .section--search-bar {
-    margin-bottom: 3.2rem;
+.panel--home .section--hero {
+    position: relative;
+    padding-top: 18rem;
+    margin: -15rem 0 4.8rem 0;
+    background: linear-gradient(rgb(0,0,0,0.3) 0%, rgb(0,0,0,0.3) 100%), url('../../img/hero-section-image.webp');
+    background-position: center 75%;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.panel--home .hero-section-title {
+    display: block;
+    padding: 12.8rem 0 9.6rem 0;
+    line-height: 10rem;
+    font-size: 7.4rem;
+    font-weight: 700;
+    color: var(--white-color);
+
+}
+
+.panel--home .hero-section-title>div {
+    display: block;
+}
+
+.wrapper--search-bar {
+    transform: translateY(30%);
+    padding: 0 2.4rem;
 }

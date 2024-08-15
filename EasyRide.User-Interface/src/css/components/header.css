@@ -1,11 +1,13 @@
 .section--header {
-    margin : 2.4rem 0 4.8rem 0; 
+    margin : 2.4rem 0 4.8rem 0;
 }
 
 .container--header {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    z-index: 10;
 }
 
 .container--header .logo {
