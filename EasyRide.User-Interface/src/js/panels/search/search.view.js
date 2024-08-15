@@ -57,24 +57,57 @@ class SearchPanelView extends PanelViewBase {
         this._searchResultContainer = this._container.querySelector('.section--search-result');
         this._searchResultMessageContainer = this._container.querySelector('.search-result-message');
         this._searchResultList = this._searchResultContainer.querySelector('.search-result-list');
-        this._busSeatSelectorContainer = this._container.querySelector('.overlay--bus-seat-selection');
+        this._initSeatSelectorElements();
+    }
+
+    _initSeatSelectorElements() {
+        this._busSeatSelector = {};
+        this._busSeatSelector.container = this._container.querySelector('.overlay--bus-seat-selection');
+        this._busSeatSelector.component = this._busSeatSelector.container.querySelector('.bus-seat-selection');
+        this._busSeatSelector.closeBtn = this._busSeatSelector.component.querySelector('.btn--close-bus-seat-selection');
+        this._busSeatSelector.body = this._busSeatSelector.component.querySelector('.bus-seat-selection-body');
+
+        this._busSeatSelector.bodyMainContent = this._busSeatSelector.component.querySelector('.bus-seat-selection-body-main');
+        this._busSeatSelector.message = this._busSeatSelector.component.querySelector('.bus-seat-selection-error-message');
+        this._busSeatSelector.sourceStop = this._busSeatSelector.body.querySelector('.details-source-stop');
+        this._busSeatSelector.destStop = this._busSeatSelector.body.querySelector('.details-destination-stop');
+        this._busSeatSelector.seatSelected = this._busSeatSelector.body.querySelector('.details-seats-selected');
+        this._busSeatSelector.netTotal = this._busSeatSelector.body.querySelector('.details-cost-net-total');
+        this._busSeatSelector.gst = this._busSeatSelector.body.querySelector('.details-cost-gst');
+        this._busSeatSelector.total = this._busSeatSelector.body.querySelector('.details-cost-total');
+
+        this._busSeatSelector.bookSeatBtn = this._busSeatSelector.body.querySelector('.btn--book-seat');
     }
 
     addLoadingAnimation({ container }) {
         switch(container) {
             case 'search-result':
                 return Animation.animateRippleLoading(this._searchResultContainer);
+            case 'seat-selection-body':
+                return Animation.animateRippleLoading(this._busSeatSelector.body, {zIndex : 1000, align : 'center' });
             default:
                 throw new InvalidArgumentError('container', container);
         }
     }
 
     showSeatConfigScreen() {
-        this._busSeatSelectorContainer.classList.add('show');
+        this._busSeatSelector.container.classList.add('show');
     }
 
     hideSeatConfigScreen() {
-        this._busSeatSelectorContainer.classList.remove('show');
+        this._busSeatSelector.container.classList.remove('show');
+    }
+
+    setSeatConfigErrorMessage({message}) {
+        if(message) {
+            this._busSeatSelector.message.textContent = message;
+            this._busSeatSelector.message.classList.remove('hidden');
+            this._busSeatSelector.bodyMainContent.classList.add('hidden');
+        } else {
+            this._busSeatSelector.message.textContent = '';
+            this._busSeatSelector.message.classList.add('hidden');
+            this._busSeatSelector.bodyMainContent.classList.remove('hidden');
+        }
     }
 
     setSearchResultData(searchResultList) {
@@ -89,6 +122,28 @@ class SearchPanelView extends PanelViewBase {
             }
         }
     }
+
+    setSeatSelectionDetails({ sourceStop, destStop, seatsSelected, netTotal, gst, total } = {}) {
+        if(sourceStop !== undefined) {
+            this._busSeatSelector.sourceStop.textContent = sourceStop;
+        }
+        if(destStop !== undefined) {
+            this._busSeatSelector.destStop.textContent = destStop;
+        }
+        if(seatsSelected !== undefined) {
+            this._busSeatSelector.seatSelected.textContent = [...seatsSelected].join(', ');
+        }
+        if(netTotal !== undefined) {
+            this._busSeatSelector.netTotal.textContent = netTotal;
+        }
+        if(gst !== undefined) {
+            this._busSeatSelector.gst.textContent = gst;
+        }
+        if(total !== undefined) {
+            this._busSeatSelector.total.textContent = total;
+        }
+        
+    } 
 
     addEventHandler(event, handler) {
         let wrapperHandler;
@@ -109,7 +164,7 @@ class SearchPanelView extends PanelViewBase {
                 break;
             case 'close-seat-view':
                 wrapperHandler = (e) => { handler(); }
-                this._busSeatSelectorContainer.querySelector('.btn--close-bus-seat-selection').addEventListener('click', wrapperHandler);
+                this._busSeatSelector.closeBtn.addEventListener('click', wrapperHandler);
                 break;
             default:
                 throw new InvalidArgumentError('eventType', eventType);
@@ -129,7 +184,7 @@ class SearchPanelView extends PanelViewBase {
                 this._container.removeEventListener('wrapperHandler', wrapperHandler);
                 break;
             case 'close-seat-view':
-                this._busSeatSelectorContainer.querySelector('.btn--close-bus-seat-selection').removeEventListener('click', wrapperHandler);
+                this._busSeatSelector.closeBtn.removeEventListener('click', wrapperHandler);
                 break;
         }
     }
@@ -176,10 +231,6 @@ class SearchPanelView extends PanelViewBase {
 
         return itemContainer;
     }
-}
-
-class SearchPanelEvents {
-    VIEW_SEAT_EVENT = 'ViewSeatEvent';
 }
 
 export {SearchPanelView};

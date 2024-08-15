@@ -10,8 +10,9 @@ class FetchUtils {
 
     static async fetchBusSeatConfigDetails(busId) {
         await asycWait(500);
+        
         return [
-            { X:0, Y:0, Z:'L', type: 'seater'},
+            { X:0, Y:0, Z:'L', type: 'seater', price: 345, gst: 48, seatId: 'B-1'},
             { X:0, Y:1, Z:'L', type: 'seater'},
             { X:0, Y:2, Z:'L', type: 'seater'},
             { X:0, Y:3, Z:'L', type: 'seater'},
@@ -58,7 +59,7 @@ class FetchUtils {
             { X:3, Y:14, Z:'L', type: 'sleeper', spanY: 2},
             { X:0, Y:14, Z:'U', type: 'sleeper', spanY: 2},
             { X:1, Y:14, Z:'U', type: 'sleeper', spanY: 2},
-            { X:3, Y:14, Z:'U', type: 'sleeper', spanY: 2}
+            { X:3, Y:14, Z:'U', type: 'sleeper', spanY: 2, price: 1345, gst: 188, seatId: 'S-1'}
         ]
     }
 }

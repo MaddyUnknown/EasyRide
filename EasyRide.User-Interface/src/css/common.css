@@ -96,7 +96,7 @@ body {
 .container--message {
     position: absolute;
     right: 2.4rem;
-    z-index: 999;
+    z-index: 99999;
 
     display: flex;
     flex-direction: column;

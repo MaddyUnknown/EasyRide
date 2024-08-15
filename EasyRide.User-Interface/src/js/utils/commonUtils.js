@@ -33,4 +33,13 @@ function asycWait(timeoutMs) {
     });
 } 
 
-export {debounce, throttle, asycWait};
+
+function isNullOrUndefined(value) {
+    if(value === null || value === undefined) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+export {debounce, throttle, asycWait, isNullOrUndefined};

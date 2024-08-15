@@ -1,5 +1,5 @@
-import { throttle } from "../../utils/commonUtils";
-import { ViewBase } from "./../../modules/viewModule";
+import { isNullOrUndefined, throttle } from "../../utils/commonUtils";
+import { messageInfoComponent, ViewBase } from "./../../modules/viewModule";
 import { BusSeatConfigPresenter } from "./busSeatConfig.presenter";
 import { DistinctRGBColorGenerator, ColorUtils } from "../../utils/colorUtils";
 import { ApplicationError } from "../../modules/errorModule";
@@ -276,6 +276,14 @@ class BusSeatConfigView extends ViewBase {
 
         if(key && !deckConfig.hitColorMap.get(key)?.data?.isBooked) {
             const seat = deckConfig.hitColorMap.get(key);
+
+            // If one of these seat data are missing, it will affect the calculation of total
+            if(isNullOrUndefined(seat.data.seatId) || isNullOrUndefined(seat.data.price) || isNullOrUndefined(seat.data.gst)) {
+                console.error(`Invalid 'seatId', 'price', 'gst' for the seat! Cannot be booked`);
+                messageInfoComponent.addErrorMessage(`Error while selecting seat`);
+                return;
+            }
+
             const renderer = this._seatConfigs.seatRendererFactory.getRenderer(seat.data);
             const seatColors = ColorUtils.getSeatColor({seatType : seat.data.type});
 
