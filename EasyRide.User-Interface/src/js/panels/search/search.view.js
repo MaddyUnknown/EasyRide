@@ -99,22 +99,16 @@ class SearchPanelView extends PanelViewBase {
     }
 
     setSeatConfigErrorMessage({message}) {
-        if(message) {
-            this._busSeatSelector.message.textContent = message;
-            this._busSeatSelector.message.classList.remove('hidden');
-            this._busSeatSelector.bodyMainContent.classList.add('hidden');
-        } else {
-            this._busSeatSelector.message.textContent = '';
-            this._busSeatSelector.message.classList.add('hidden');
-            this._busSeatSelector.bodyMainContent.classList.remove('hidden');
-        }
+        const { message: msgElem, bodyMainContent } = this._busSeatSelector;
+        msgElem.textContent = message || '';
+        msgElem.classList.toggle('hidden', !message);
+        bodyMainContent.classList.toggle('hidden', !!message);
     }
 
     setSearchResultData(searchResultList) {
         this._searchResultList.innerHTML = '';
         if(searchResultList.length === 0) {
             this._searchResultMessageContainer.textContent = 'No bus available!';
-            return;
         } else {
             this._searchResultMessageContainer.textContent = '';
             for(const searchItem of searchResultList) {
@@ -124,24 +118,21 @@ class SearchPanelView extends PanelViewBase {
     }
 
     setSeatSelectionDetails({ sourceStop, destStop, seatsSelected, netTotal, gst, total } = {}) {
-        if(sourceStop !== undefined) {
-            this._busSeatSelector.sourceStop.textContent = sourceStop;
-        }
-        if(destStop !== undefined) {
-            this._busSeatSelector.destStop.textContent = destStop;
-        }
-        if(seatsSelected !== undefined) {
-            this._busSeatSelector.seatSelected.textContent = [...seatsSelected].join(', ');
-        }
-        if(netTotal !== undefined) {
-            this._busSeatSelector.netTotal.textContent = netTotal;
-        }
-        if(gst !== undefined) {
-            this._busSeatSelector.gst.textContent = gst;
-        }
-        if(total !== undefined) {
-            this._busSeatSelector.total.textContent = total;
-        }
+        const {
+            sourceStop: srcElem,
+            destStop: destElem,
+            seatSelected,
+            netTotal: netElem,
+            gst: gstElem,
+            total: totalElem,
+        } = this._busSeatSelector;
+
+        if (sourceStop !== undefined) srcElem.textContent = sourceStop;
+        if (destStop !== undefined) destElem.textContent = destStop;
+        if (seatsSelected !== undefined) seatSelected.textContent = [...seatsSelected].join(', ');
+        if (netTotal !== undefined) netElem.textContent = netTotal;
+        if (gst !== undefined) gstElem.textContent = gst;
+        if (total !== undefined) totalElem.textContent = total;
         
     } 
 
