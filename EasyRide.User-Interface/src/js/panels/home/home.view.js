@@ -5,8 +5,8 @@ import { PanelViewBase } from "../../modules/viewModule";
 import { HomePanelPresenter } from "./home.presenter";
 
 class HomePanelView extends PanelViewBase {
-    constructor() {
-        super();
+    constructor(pageView) {
+        super(pageView);
         this._presenter = new HomePanelPresenter(this);
         this.searchBox = new SearchBoxView();
     }
@@ -23,6 +23,7 @@ class HomePanelView extends PanelViewBase {
     }
 
     init() {
+        this.pageView.header.setHeaderProperty({position : 'absolute'});
         this.searchBox.init();
         this._presenter.init();
     }
@@ -30,6 +31,7 @@ class HomePanelView extends PanelViewBase {
     destroy() {
         this._presenter.destroy();
         this.searchBox.destroy();
+        this.pageView.header.setHeaderProperty({position : 'unset'});
     }
 
 }

@@ -1,6 +1,9 @@
+import { InvalidArgumentError } from "./errorModule";
+
 class ViewType {
     static COMPONENT = 'Component';
     static PANEL = 'Panel';
+    static PAGE = 'Page';
 }
 
 class ViewBase {
@@ -44,11 +47,26 @@ class ViewBase {
     }
 }
 
+// Placeholder class acting as interface for the pages (root level component);
+class PageViewBase extends ViewBase {
+    static $TYPE = ViewType.PAGE;
+    
+}
+
 class PanelViewBase extends ViewBase {
     static $TYPE = ViewType.PANEL;
 
     static get $PANEL_TEMPLATE() {
         return null;
+    }
+
+    constructor(pageView) {
+        super();
+        if(!(pageView instanceof PageViewBase)) {
+            throw new InvalidArgumentError('view', pageView);
+        }
+
+        this.pageView = pageView;
     }
 }
 
@@ -144,4 +162,4 @@ class MessageInfoComponent {
 
 const messageInfoComponent = new MessageInfoComponent();
 
-export { ViewType, ViewBase, PanelViewBase, messageInfoComponent };
+export { ViewType, ViewBase, PanelViewBase, PageViewBase, messageInfoComponent };

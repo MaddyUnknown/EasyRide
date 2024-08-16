@@ -1,20 +1,25 @@
-.section--header {
+.component--header {
+    width: 100%;
     margin : 2.4rem 0 4.8rem 0;
 }
 
-.container--header {
-    position: relative;
+.component--header.absolute {
+    position: absolute;
+    top: 0;
+    margin-bottom: 0;
+}
+
+.component--header .container--header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    z-index: 10;
 }
 
-.container--header .logo {
+.component--header .container--header .logo {
     width: 16rem;
 }
 
-.nav--header>ul {
+.component--header .nav--header>ul {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -25,20 +30,20 @@
     font-weight: 600;
 }
 
-.container--user-profile {
+.component--header .container--user-profile {
     display: flex;
     align-items: center;
     gap: 0.4rem;
 }
 
-.user-profile-pic {
+.component--header .user-profile-pic {
     height: 5rem;
     border-radius: 50%;
     border: 0.2rem solid transparent;
     transition: all var(--transition-time);
 }
 
-.container--user-profile:hover .user-profile-pic {
+.component--header .container--user-profile:hover .user-profile-pic {
     border: 0.2rem solid var(--primary-color);
     filter: brightness(90%);
 }
