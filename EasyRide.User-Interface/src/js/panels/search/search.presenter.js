@@ -49,7 +49,6 @@ class SearchPanelPresenter {
     }
 
     seatSelectedHandler(seatSelectedData) {
-        console.log(seatSelectedData);
         const { data: {seatId, price, gst}, state: {isSelected}} = seatSelectedData;
 
         if(isSelected) {

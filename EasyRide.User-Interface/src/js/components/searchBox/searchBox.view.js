@@ -118,7 +118,6 @@ class SearchBoxView extends ViewBase {
             case 'input-focus-out':
                 wrapperHandler = (e) => {
                     const elementId = e.target.id;
-                    console.log(this._inputIdToProperty);
                     // debugger;
                     if (this._inputIdToProperty[elementId]) {
                         const eventData = {};

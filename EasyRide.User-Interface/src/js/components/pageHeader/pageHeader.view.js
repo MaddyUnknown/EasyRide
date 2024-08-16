@@ -1,8 +1,12 @@
 import { InvalidArgumentError } from "../../modules/errorModule";
 import { ViewBase } from "./../../modules/viewModule";
 import { PageHeaderPresenter } from "./pageHeader.presenter";
+import lightLogoUrl from 'url:../../../img/logo-light.webp';
+import darkLogoUrl from 'url:../../../img/logo-dark.webp';
 
 class PageHeaderView extends ViewBase {
+
+    static _DEFAULT_THEME = 'light';
 
     constructor() {
         super();
@@ -14,39 +18,60 @@ class PageHeaderView extends ViewBase {
         if(!this._container) {
             throw new InvalidArgumentError('PageHeaderContainer', this._container);
         }
+        
+        this._logoMap = new Map(
+            [
+                ['dark', darkLogoUrl],
+                ['light', lightLogoUrl]
+            ]);
 
+        this._initElements();
+        this._applyTheme('default');
         this._presenter.init();
+    }
+
+    _initElements() {
+        this._logoImage = this._container.querySelector('.header-logo');
+        this._navLinks = [...this._container.querySelectorAll('.nav-link')];
     }
 
     destroy() {
         this._presenter.destroy();
 
+        this._logoImage = undefined;
+        this._navLinks = undefined;
+        this._logoMap = undefined;
         this._container = undefined;
     }
 
-    setHeaderProperty({theme, position}) {
-        if(theme !== undefined) {
-            switch(theme) {
-                case 'dark':
-                    break;
-                case 'light':
-                    break;
-                default:
-                    throw new InvalidArgumentError('theme', theme);
-            }
+    setHeaderProperty({ theme, position }) {
+        if (theme) this._applyTheme(theme);
+        if (position) this._setPosition(position);
+    }
+
+    _applyTheme(theme) {
+        const newTheme = theme === 'default' ? PageHeaderView._DEFAULT_THEME : theme;
+
+        if (!this._logoMap.has(newTheme)) {
+            throw new InvalidArgumentError('themeName', `Theme '${newTheme}' not found`);
         }
 
-        if(position !== undefined) {
-            switch(position) {
-                case 'absolute':
-                    this._container.classList.add('absolute');
-                    break;
-                case 'unset':
-                    this._container.classList.remove('absolute');
-                    break;
-                default:
-                    throw new InvalidArgumentError('position', position);
-            }
+        if (newTheme !== this._currentTheme) {
+            this._currentTheme = newTheme;
+            this._logoImage.src = this._logoMap.get(newTheme);
+            this._toggleNavLinkTheme(newTheme === 'dark');
+        }
+    }
+
+    _toggleNavLinkTheme(isDark) {
+        this._navLinks.forEach(link => link.classList.toggle('dark', isDark));
+    }
+
+    _setPosition(position) {
+        if (['absolute', 'unset'].includes(position)) {
+            this._container.classList.toggle('absolute', position === 'absolute');
+        } else {
+            throw new InvalidArgumentError('position', `Invalid position '${position}'`);
         }
     }
 }

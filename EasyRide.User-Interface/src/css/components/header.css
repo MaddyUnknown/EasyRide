@@ -15,7 +15,7 @@
     justify-content: space-between;
 }
 
-.component--header .container--header .logo {
+.component--header .container--header .header-logo {
     width: 16rem;
 }
 
@@ -45,5 +45,10 @@
 
 .component--header .container--user-profile:hover .user-profile-pic {
     border: 0.2rem solid var(--primary-color);
+    filter: brightness(90%);
+}
+
+.component--header .container--user-profile.dark:hover .user-profile-pic {
+    border: 0.2rem solid var(--primary-color-tint4);
     filter: brightness(90%);
 }

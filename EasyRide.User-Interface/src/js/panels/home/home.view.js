@@ -23,7 +23,7 @@ class HomePanelView extends PanelViewBase {
     }
 
     init() {
-        this.pageView.header.setHeaderProperty({position : 'absolute'});
+        this.pageView.header.setHeaderProperty({position : 'absolute', theme : 'dark'});
         this.searchBox.init();
         this._presenter.init();
     }
@@ -31,7 +31,7 @@ class HomePanelView extends PanelViewBase {
     destroy() {
         this._presenter.destroy();
         this.searchBox.destroy();
-        this.pageView.header.setHeaderProperty({position : 'unset'});
+        this.pageView.header.setHeaderProperty({position : 'unset', theme : 'default'});
     }
 
 }
