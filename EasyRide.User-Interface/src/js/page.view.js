@@ -1,4 +1,4 @@
-import { PageHeaderView } from "./components/pageHeader/pageHeader.view";
+import { HeaderView } from "./components/header/header.view";
 import { router } from "./modules/routeModule";
 import { PageViewBase } from "./modules/viewModule";
 import { MainPagePresenter } from "./page.presenter";
@@ -7,7 +7,7 @@ class MainPageView extends PageViewBase {
     constructor() {
         super();
         this._presenter = new MainPagePresenter(this);
-        this.header = new PageHeaderView();
+        this.header = new HeaderView();
     }
 
     init() {

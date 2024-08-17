@@ -1,16 +1,16 @@
 import { InvalidArgumentError } from "../../modules/errorModule";
-import { ViewBase } from "./../../modules/viewModule";
-import { PageHeaderPresenter } from "./pageHeader.presenter";
+import { ViewBase } from "../../modules/viewModule";
+import { HeaderPresenter } from "./header.presenter";
 import lightLogoUrl from 'url:../../../img/logo-light.webp';
 import darkLogoUrl from 'url:../../../img/logo-dark.webp';
 
-class PageHeaderView extends ViewBase {
+class HeaderView extends ViewBase {
 
     static _DEFAULT_THEME = 'light';
 
     constructor() {
         super();
-        this._presenter = new PageHeaderPresenter(this);
+        this._presenter = new HeaderPresenter(this);
     }
 
     init() {
@@ -50,7 +50,7 @@ class PageHeaderView extends ViewBase {
     }
 
     _applyTheme(theme) {
-        const newTheme = theme === 'default' ? PageHeaderView._DEFAULT_THEME : theme;
+        const newTheme = theme === 'default' ? HeaderView._DEFAULT_THEME : theme;
 
         if (!this._logoMap.has(newTheme)) {
             throw new InvalidArgumentError('themeName', `Theme '${newTheme}' not found`);
@@ -76,4 +76,4 @@ class PageHeaderView extends ViewBase {
     }
 }
 
-export { PageHeaderView };
+export { HeaderView };

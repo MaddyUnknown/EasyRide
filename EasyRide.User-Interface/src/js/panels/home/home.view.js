@@ -154,7 +154,7 @@ class HomePanelView extends PanelViewBase {
             }
         }
 
-        let timer = null; setInterval(slideChangeFunc, timeMs);
+        let timer = null;
 
         const start = () => {
             if(timer !== null) {

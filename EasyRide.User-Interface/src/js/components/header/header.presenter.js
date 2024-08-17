@@ -1,9 +1,9 @@
 import { InvalidArgumentError } from "../../modules/errorModule";
-import { PageHeaderView } from "./pageHeader.view";
+import { HeaderView } from "./header.view";
 
-class PageHeaderPresenter {
+class HeaderPresenter {
     constructor(view) {
-        if(!(view instanceof PageHeaderView)) {
+        if(!(view instanceof HeaderView)) {
             throw new InvalidArgumentError('view', view);
         }
         
@@ -19,4 +19,4 @@ class PageHeaderPresenter {
     }
 }
 
-export { PageHeaderPresenter };
+export { HeaderPresenter };
