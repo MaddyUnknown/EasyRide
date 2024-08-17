@@ -1,0 +1,8 @@
+.component--footer {
+    padding: 0.4rem 0 0.4rem;
+
+    background-color: var(--dark-grey-shade1);
+    color: var(--white-color);
+
+    font-size: 1.2rem;
+}

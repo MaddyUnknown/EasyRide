@@ -4,6 +4,7 @@
 
 /********** COMPONENTS **********/
 @import "./components/busSeatConfig.css";
+@import "./components/footer.css";
 @import "./components/header.css";
 @import "./components/searchBox.css";
 
@@ -13,3 +14,6 @@
 
 /********** TEMPLATES **********/
 @import "./templates/searchItem.css";
+
+/********** PAGE **********/
+@import "./page.css";
