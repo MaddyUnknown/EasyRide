@@ -3,7 +3,7 @@ import html from "bundle-text:../../../html/home.html";
 import { SearchBoxView } from "../../components/searchBox/searchBox.view";
 import { PanelViewBase } from "../../modules/viewModule";
 import { HomePanelPresenter } from "./home.presenter";
-import { InvalidArgumentError } from "../../modules/errorModule";
+import { ApplicationError, InvalidArgumentError } from "../../modules/errorModule";
 
 class HomePanelView extends PanelViewBase {
     constructor(pageView) {
@@ -56,6 +56,9 @@ class HomePanelView extends PanelViewBase {
         this._carouselBtns.next.addEventListener('click', this._boundCarousalBtnClickHandler);
         this._carouselDotsContainer.addEventListener('click', this._boundCarousalDotClickHandler);
 
+        this._carousalTimer = this._createCarousalTimerInterval(4000);
+        this._carousalTimer.start(); 
+
         this._setCarousalIndex(0);
     }
 
@@ -68,6 +71,9 @@ class HomePanelView extends PanelViewBase {
 
         this.searchBox.destroy();
         this.pageView.header.setHeaderProperty({position : 'unset', theme : 'default'});
+
+        this._carousalTimer.stop();
+        this._carousalTimer = undefined;
         this._boundCarousalBtnClickHandler = undefined;
         this._boundCarousalDotClickHandler = undefined;
         this._carouselBtns = undefined;
@@ -121,6 +127,8 @@ class HomePanelView extends PanelViewBase {
         if(newActiveDot) {
             newActiveDot.classList.add('active');
         }
+
+        this._carousalTimer.reset();
     }
 
     _carousalButtonClickHandler(e) {
@@ -135,6 +143,43 @@ class HomePanelView extends PanelViewBase {
         if(element) {
             this._setCarousalIndex(element.dataset.targetIndex);
         }
+    }
+
+    _createCarousalTimerInterval(timeMs) {
+        const slideChangeFunc =  ()=> {
+            const index = Number.parseInt(this._carouselDotsContainer.querySelector('.carousal-dot.active')?.dataset.targetIndex);
+            if(!Number.isNaN(index)) {
+                const nextIndex = (index+1)%(this._carouselItems.length);
+                this._setCarousalIndex(nextIndex);
+            }
+        }
+
+        let timer = null; setInterval(slideChangeFunc, timeMs);
+
+        const start = () => {
+            if(timer !== null) {
+                throw new Error('Timer is already started');
+            }
+            timer = setInterval(slideChangeFunc, timeMs);
+        };
+
+        const reset = () => {
+            if(timer === null) {
+                throw new Error('Timer not started');
+            }
+            clearInterval(timer);
+            timer = setInterval(slideChangeFunc, timeMs);
+        }
+
+        const stop = () => {
+            if(timer === null) {
+                throw new Error('Timer not started');
+            }
+            clearInterval(timer);
+            timer = null;
+        }
+
+        return  { start, reset, stop };
     }
 
 }

@@ -1,16 +1,16 @@
 .panel--home .section--hero {
     margin-bottom: 9.6rem;
     background: linear-gradient(rgb(0,0,0,0.3) 0%, rgb(0,0,0,0.3) 100%), url('../../img/hero-section-image.webp');
-    background-position: center 75%;
+    background-position: center 85%;
     background-repeat: no-repeat;
     background-size: cover;
 }
 
 .panel--home .hero-section-title {
     display: block;
-    padding: 25.6rem 0 12.8rem 0;
+    padding: 25.6rem 0 3.2rem 0;
     font-size: 6.2rem;
-    line-height: 1.2;
+    line-height: 1.3;
     font-weight: 700;
     color: var(--white-color);
 
@@ -26,6 +26,44 @@
     margin: 0 auto;
 }
 
+.panel--home .container--satisfied-customers {
+    display: flex;
+    align-items: center;
+    gap: 2.4rem;
+
+    padding-bottom: 12.8rem;
+
+    font-weight: 600;
+    font-size: 1.8rem;
+    word-spacing: 1.5;
+    line-height: 1.7;
+
+    color: var(--white-color);
+}
+
+.panel--home .container--satisfied-customers .satisfied-customer-text>span {
+    color: var(--primary-color-tint4);
+    font-weight: 700;
+}
+
+.container-satisfaction-customer-img {
+    display: flex;
+    align-items: center;
+}
+
+.container-satisfaction-customer-img img {
+    width: 4.8rem;
+    height: 4.8rem;
+    border-radius: 50%;
+    border: 0.2rem solid var(--primary-color-tint4);
+    margin-left: -2rem;
+}
+
+.container-satisfaction-customer-img img:first-child {
+    margin-left: 0;
+}
+
+
 /*       How it works section            */
 .panel--home .section--how {
     margin-bottom: 9.6rem;
@@ -35,7 +73,7 @@
     margin-bottom: 4.8rem;
     text-align: center;
     font-size: 1.6rem;
-    line-height: 1.52;
+    line-height: 1.7;
 }
 
 .panel--home .how-header {
@@ -52,9 +90,9 @@
 .panel--home .container--how-steps {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    column-gap: 1.2rem;
+    column-gap: 1.6rem;
     font-size: 1.6rem;
-    line-height: 1.52;
+    line-height: 1.7;
     text-align: center;
 }
 
@@ -92,7 +130,7 @@
     margin-bottom: 4.8rem;
     text-align: center;
     font-size: 1.6rem;
-    line-height: 1.52;
+    line-height: 1.7;
 }
 
 .panel--home .testimony-header {
@@ -128,9 +166,9 @@
     left: 0;
     padding: 0 5.2rem;
     font-size: 1.6rem;
-    line-height: 1.52;
+    line-height: 1.7;
     min-width: 100%;
-    transition: all var(--transition-time);
+    transition: all calc(var(--transition-time)*1.5);
 }
 
 .panel--home .wrapper--testimony-carousel .user-pic {
@@ -175,7 +213,7 @@
 
     font-size: 2.4rem;
     text-decoration: none;
-    transition: all var(--transition-time);
+    transition: all calc(var(--transition-time)*1.5);
 }
 
 .panel--home .wrapper--testimony-carousel .btn--testimony:hover,
@@ -199,7 +237,7 @@
     border-radius: 50%;
     background-color: var(--light-grey);
     
-    transition: background-color var(--transition-time);
+    transition: background-color calc(var(--transition-time)*1.5);
 }
 
 .panel--home .wrapper--testimony-carousel .carousal-dot.active {
