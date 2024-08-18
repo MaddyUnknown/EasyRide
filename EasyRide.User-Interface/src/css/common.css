@@ -15,6 +15,30 @@ html {
     color : var(--black-color);
 }
 
+/**************************/
+/* BELOW 1200px (Landscape Tablets) */
+/**************************/
+
+@media (max-width: 75em) {
+    html {
+      /* 9px / 16px  */
+      font-size: 56.25%;
+    }
+}
+
+/**************************/
+/* BELOW 944px (Tablets) */
+/**************************/
+
+@media (max-width: 59em) {
+    html {
+      /* 8px / 16px = 0.5 = 50% */
+      font-size: 50%;
+    }
+}
+
+
+
 body {
     background-color: var(--background-color);
     font-family: "Inter", sans-serif;

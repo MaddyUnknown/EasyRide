@@ -56,6 +56,8 @@ Medium: 11px
 2 / 4 / 8 / 12 / 16 / 24 / 32 / 48 / 64 / 80 / 96 / 128
 */
 
-
+-Break points
+300px-500px     600px-900px			900px-1100px		     1200px-inf
+Phone		 tablet (portrate)  Tablet and small laptop    Laptops and Monitor
 
 RFC3986 Specification for url

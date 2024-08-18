@@ -36,7 +36,7 @@
 
     height: 2.4rem;
     
-    background-color: var(--background-color);
+    background-color: transparent;
     
     border-bottom: 0.2rem solid transparent;
     transition: all var(--transition-time);
@@ -53,7 +53,8 @@
     --ionicon-stroke-width: 6.2rem;
 }
 
-.component--search-bar .form--search-bar .btn--search, .form--search-bar .btn--search:visited {
+.component--search-bar .form--search-bar .btn--search, 
+.component--search-bar .form--search-bar .btn--search:visited {
     cursor: pointer;
 
     display: flex;
@@ -77,11 +78,17 @@
     font-size: 1.6rem;
 }
 
-.component--search-bar .form--search-bar .btn--search:hover, .form--search-bar .btn--search:active {
+.component--search-bar .form--search-bar .btn--search:hover, 
+.component--search-bar .form--search-bar .btn--search:active {
     background-color: var(--primary-color-shade1);
 }
 
-.component--search-bar .form-group--dropping-point::after, .form-group--boarding::after {
+.component--search-bar .form-group--boarding {
+    padding-left: 2.4rem;
+}
+
+.component--search-bar .form-group--dropping-point::after, 
+.component--search-bar .form-group--boarding::after {
     position: absolute;
     display: block;
     top: 10%;
@@ -119,4 +126,45 @@
     height: 1.6rem;
     width: 1.6rem;
     --ionicon-stroke-width: 3rem;
+}
+
+
+@media(max-width: 49em) {
+    .component--search-bar .form--search-bar {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .component--search-bar .form-group--boarding,
+    .component--search-bar .form-group--dropping-point {
+        padding-left: 2.4rem;
+        padding-right: 2.4rem;
+    }
+
+    .component--search-bar .form-group--boarding-date {
+        padding-left: 2.4rem;
+    }
+
+    .component--search-bar .form-group--boarding,
+    .component--search-bar .form-group--dropping-point {
+        grid-column: 1/-1;
+    }
+
+    .component--search-bar .form-group--dropping-point::after, 
+    .component--search-bar .form-group--boarding::after {
+        left: 2.5%;
+        height: 0.1rem;
+        top: calc(100% + 0.8rem);
+        width: 95%;
+        background-color: var(--light-grey);
+    }
+
+    .component--search-bar .btn--toggle-src-dest {
+        top: calc(100% + 0.8rem);
+        left: 50%;
+    }
+
+    .component--search-bar .form-group--boarding .error-message--form,
+    .component--search-bar .form-group--dropping-point .error-message--form {
+        bottom: -3.1rem;
+    }
 }
