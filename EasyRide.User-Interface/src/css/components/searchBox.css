@@ -128,7 +128,9 @@
     --ionicon-stroke-width: 3rem;
 }
 
-
+/**************************/
+/*     BELOW 784px        */
+/**************************/
 @media(max-width: 49em) {
     .component--search-bar .form--search-bar {
         grid-template-columns: 1fr 1fr;
