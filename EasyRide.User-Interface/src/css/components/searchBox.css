@@ -163,6 +163,7 @@
     .component--search-bar .btn--toggle-src-dest {
         top: calc(100% + 0.8rem);
         left: 50%;
+        transform: translate(-50%,-50%) rotate(90deg);
     }
 
     .component--search-bar .form-group--boarding .error-message--form,

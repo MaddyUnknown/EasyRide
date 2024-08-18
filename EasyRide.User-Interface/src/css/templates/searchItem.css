@@ -1,7 +1,8 @@
 .search-result-item{
     position: relative;
 
-    display: flex;
+    display: grid;
+    grid-template-columns: 32fr 42fr 11fr 15fr;
     align-items: center;
     justify-content: center;
     gap: 1.8rem;
@@ -11,7 +12,7 @@
     box-shadow: 0 1.2rem 4.8rem rgba(0, 0, 0, 0.075);
 }
 
-.search-result-item .container--bus-general-details {
+/* .search-result-item .container--bus-general-details {
     width: 32%;
 }
 
@@ -25,7 +26,7 @@
 
 .search-result-item .container--bus-seat-available {
     width: 15%;
-}
+} */
 
 /* BUS GENERAL DETAILS */
 
@@ -74,7 +75,7 @@
 .search-result-item .container--bus-time-details {
     position: relative;
     display: grid;
-    grid-template-columns: 1fr 3fr;
+    grid-template-columns: max-content 1fr;
     row-gap: 4.8rem;
     column-gap: 2.4rem;
     align-items: center;
@@ -184,7 +185,7 @@
     bottom: 0;
     right: 0;
     
-    padding: 0.8rem 3.2rem;
+    padding: 1.2rem 3.2rem;
 
     color: var(--white-color);
     background-color: var(--primary-color);
@@ -199,4 +200,75 @@
 
 .search-result-item .btn--view-seats:hover, .btn--view-seats:active {
     background-color: var(--primary-color-shade1);
+}
+
+/**************************/
+/*     BELOW 608px        */
+/**************************/
+@media(max-width: 38em) {
+
+    .search-result-item {
+        grid-template-columns: 1fr 1fr;
+        padding: 3.2rem;
+    }
+    
+    .search-result-item .container--bus-general-details {
+        grid-column: 1;
+        grid-row: 1 / 3;
+    }
+
+    .search-result-item .container--bus-time-details {
+        margin-top: 2.4rem;
+        margin-left: 2.8rem;
+        grid-column: 1/-1;
+    }
+
+    .search-result-item .container--bus-seat-cost {
+        grid-row: 1;
+        grid-column: 2;
+        text-align: end;
+    }
+
+    .search-result-item .container--bus-seat-cost>* {
+        display: inline;
+    }
+
+    .search-result-item .container--bus-seat-available {
+        grid-row: 2;
+        grid-column: 2;
+    }
+}
+
+
+/**************************/
+/*     BELOW 400px        */
+/**************************/
+@media(max-width: 25em) {
+
+    .search-result-item {
+        row-gap: 3.2rem;
+    }
+    
+    .search-result-item .container--bus-general-details {
+        grid-column: 1 / -1;
+        grid-row: 1 / 1;
+    }
+
+    .search-result-item .container--bus-time-details {
+        margin-top: 0rem;
+    }
+
+    .search-result-item .container--bus-seat-cost {
+        grid-row: 3;
+        grid-column: 1;
+        text-align: left;
+    }
+
+    .search-result-item .container--bus-seat-cost>* {
+        display: inline;
+    }
+
+    .search-result-item .container--bus-seat-available {
+        grid-row: 3;
+    }
 }

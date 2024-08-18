@@ -6,6 +6,8 @@
 .panel--search .container--search-panel-main {
     position: relative;
 
+    margin-bottom: 9.6rem;
+
     display: flex;
     align-items: start;
     gap: 1.4rem;
@@ -221,3 +223,19 @@
     border: 0.1rem solid var(--light-grey);
     border-radius: 0.8rem;
 }
+
+/**************************/
+/*     BELOW 784px        */
+/**************************/
+@media(max-width: 49em) {
+    .panel--search .section--filters {
+        display: none;
+    }
+
+    .panel--search .section--search-result {
+        width: 100%;
+    }
+
+}
+
+
