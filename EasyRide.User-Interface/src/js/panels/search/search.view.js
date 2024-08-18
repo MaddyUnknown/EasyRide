@@ -10,8 +10,8 @@ import { Animation } from "../../modules/animationModule";
 import { InvalidArgumentError } from "../../modules/errorModule";
 
 class SearchPanelView extends PanelViewBase {
-    constructor() {
-        super();
+    constructor(pageView) {
+        super(pageView);
         this._presenter = new SearchPanelPresenter(this);
         this.searchBox = new SearchBoxView();
         this.busSeatConfig = new BusSeatConfigView();

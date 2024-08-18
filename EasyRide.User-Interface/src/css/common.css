@@ -46,9 +46,12 @@ body {
     color: var(--primary-color);
 }
 
-.btn.btn.btn--primary.btn-full {
-    width: 100%;
-    padding: 1.2rem 3.2rem;
+.btn.btn--link.dark, .btn.btn--link.dark:link, .btn.btn--link.dark:visited {
+    color: var(--white-color);
+}
+
+.btn.btn--link.dark:hover, .btn.btn--link.dark:active {
+    color: var(--primary-color-tint4);
 }
 
 .btn.btn--primary, .btn.btn--primary:visited {
@@ -66,6 +69,11 @@ body {
 .btn.btn--primary:hover, .btn.btn--primary:active {
     color: var(--white-color);
     background-color: var(--primary-color-shade1);
+}
+
+.btn.btn.btn--primary.btn-full {
+    width: 100%;
+    padding: 1.2rem 3.2rem;
 }
 
 

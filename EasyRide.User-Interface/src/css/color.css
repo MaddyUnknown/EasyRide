@@ -6,6 +6,7 @@
     --primary-color-shade7 : #1c2036;
     --primary-color-shade9 : #eff0f7;
 
+    --primary-color-tint2 : #7d88c2;
     --primary-color-tint4 : #9ea6d1;
 
     --background-color : #fff;
@@ -14,6 +15,7 @@
     --light-grey : #DDDDDD;
     --light-grey-shade1 : #BBB;
     --dark-grey : #767676;
+    --dark-grey-shade1 : #444;
     --black-color : #000;
 
     --overlay-color : rgb(0, 0, 0, 0.75);

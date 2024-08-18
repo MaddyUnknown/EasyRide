@@ -41,7 +41,7 @@ class MainPagePresenter {
 
         this._view.setPanelContent(content);
         
-        const panel = new routePanelView();
+        const panel = new routePanelView(this._view);
         panel.init();
         this._activePanel = panel;
     }
